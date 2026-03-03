@@ -863,9 +863,39 @@
             overflow: hidden
         }
 
+        .p-img-photo {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform .6s cubic-bezier(.25, .46, .45, .94)
+        }
+
+        .p-card:hover .p-img-photo {
+            transform: scale(1.06)
+        }
+
+        .m-img-photo {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block
+        }
+
+        #m-emoji {
+            position: relative;
+            z-index: 1
+        }
+
         .p-emoji {
             font-size: 6.5rem;
-            transition: transform .6s cubic-bezier(.25, .46, .45, .94)
+            transition: transform .6s cubic-bezier(.25, .46, .45, .94);
+            position: relative;
+            z-index: 1
         }
 
         .p-card:hover .p-emoji {
@@ -1745,7 +1775,8 @@
             justify-content: center;
             min-height: 380px;
             position: relative;
-            font-size: 7.5rem
+            font-size: 7.5rem;
+            overflow: hidden
         }
 
         .m-close {
@@ -2661,35 +2692,47 @@
         // ── CONTENTFUL CONFIG ──────────────────────────────────────────────────
         const SPACE_ID = 'ui4g1hyiq4ij';
         const ACCESS_TOKEN = 'aVCiWO4XWj5cwbnU7-30vWq4S6yrrXkzODz2qem8ia8';
-        const CONTENTFUL_URL = `https://cdn.contentful.com/spaces/${SPACE_ID}/entries?content_type=product&limit=200&access_token=${ACCESS_TOKEN}`;
+        const CONTENTFUL_URL = `https://cdn.contentful.com/spaces/${SPACE_ID}/entries?content_type=product&limit=200&include=2&access_token=${ACCESS_TOKEN}`;
 
         // Emoji map bazuar në kategorinë e produktit
         const EMOJI_MAP = {
-            'canta-femra':   '<i class="fas fa-shopping-bag"></i>',
+            'canta-femra': '<i class="fas fa-shopping-bag"></i>',
             'canta-meshkuj': '<i class="fas fa-briefcase"></i>',
-            'portofole':     '<i class="fas fa-wallet"></i>',
-            'bizhuteri':     '<i class="fas fa-gem"></i>',
+            'portofole': '<i class="fas fa-wallet"></i>',
+            'bizhuteri': '<i class="fas fa-gem"></i>',
         };
 
         // Konverton entry-n e Contentful në objektin e produktit
-        function mapEntry(entry) {
+        function mapEntry(entry, includes) {
             const f = entry.fields;
             const cat = f.category || 'canta-femra';
+
+            // Merr URL-në e fotos nga includes.Asset
+            let imageUrl = null;
+            if (f.image && f.image.sys && includes && includes.Asset) {
+                const assetId = f.image.sys.id;
+                const asset = includes.Asset.find(a => a.sys.id === assetId);
+                if (asset && asset.fields && asset.fields.file) {
+                    imageUrl = 'https:' + asset.fields.file.url;
+                }
+            }
+
             return {
-                id:       entry.sys.id,
-                name:     f.name     || 'Pa emër',
-                brand:    f.brand    || 'AURË',
-                cat:      cat,
-                emoji:    f.emoji    || EMOJI_MAP[cat] || '<i class="fas fa-shopping-bag"></i>',
-                price:    f.price    || 0,
+                id: entry.sys.id,
+                name: f.name || 'Pa emër',
+                brand: f.brand || 'AURË',
+                cat: cat,
+                emoji: f.emoji || EMOJI_MAP[cat] || '<i class="fas fa-shopping-bag"></i>',
+                image: imageUrl,
+                price: f.price || 0,
                 oldPrice: f.oldPrice || null,
-                rating:   f.rating   || 5.0,
-                reviews:  f.reviews  || 0,
-                tag:      f.tag      || null,
-                colors:   f.colors   || ['#8B4513'],
-                mat:      f.material || 'Lëkurë',
-                sizes:    f.sizes    || ['One Size'],
-                desc:     f.description || '',
+                rating: f.rating || 5.0,
+                reviews: f.reviews || 0,
+                tag: f.tag || null,
+                colors: f.colors || ['#8B4513'],
+                mat: f.material || 'Lëkurë',
+                sizes: f.sizes || ['One Size'],
+                desc: f.description || '',
             };
         }
 
@@ -2710,7 +2753,7 @@
                 const data = await res.json();
 
                 if (data.items && data.items.length > 0) {
-                    products = data.items.map(mapEntry);
+                    products = data.items.map(e => mapEntry(e, data.includes));
                     productsLoaded = true;
                     renderProds();
                 } else {
@@ -2801,14 +2844,16 @@
                 const wd = wishlist.includes(String(p.id));
                 const c = document.createElement('div'); c.className = 'p-card'; c.style.animationDelay = `${i * .06}s`;
                 c.innerHTML = `
-      <div class="p-img" onclick="openMod(event,${p.id})">
+      <div class="p-img" onclick="openMod(event,'${p.id}')">
         ${p.tag ? `<span class="p-tag tag-${p.tag}">${p.tag === 'new' ? 'I Ri' : p.tag === 'sale' ? 'Sale' : p.tag === 'hot' ? '<i class="fas fa-fire"></i> Hot' : 'Ltd'}</span>` : ''}
         <div class="p-acts">
-          <button class="p-act ${wd ? 'liked' : ''}" onclick="toggleWish(event,${p.id})">${wd ? '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>'}</button>
-          <button class="p-act" onclick="openMod(event,${p.id})"><i class="fas fa-search"></i></button>
+          <button class="p-act ${wd ? 'liked' : ''}" onclick="toggleWish(event,'${p.id}')">${wd ? '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>'}</button>
+          <button class="p-act" onclick="openMod(event,'${p.id}')"><i class="fas fa-search"></i></button>
         </div>
-        <span class="p-emoji">${p.emoji}</span>
-        <button class="p-qadd" onclick="quickAdd(event,${p.id})">+ Shto në Shportë</button>
+        ${p.image
+                        ? `<img class="p-img-photo" src="${p.image}?w=600&fm=webp&q=80" alt="${p.name}" loading="lazy">`
+                        : `<span class="p-emoji">${p.emoji}</span>`}
+        <button class="p-qadd" onclick="quickAdd(event,'${p.id}')">+ Shto në Shportë</button>
       </div>
       <div class="p-info">
         <div class="p-brand">${p.brand}</div>
@@ -2832,19 +2877,34 @@
         }
         function sortP(v) { curSort = v; renderProds(); }
         function loadMore() { visibleCnt += 8; renderProds(); }
-        function quickAdd(e, id) { e.stopPropagation(); const p = products.find(x => String(x.id) === String(id)); if(p) addToCart(p, p.sizes[0], p.colors[0]); }
+        function quickAdd(e, id) { e.stopPropagation(); const p = products.find(x => String(x.id) === String(id)); if (p) addToCart(p, p.sizes[0], p.colors[0]); }
 
         function addToCart(prod, sz, col) {
-            const ex = cart.find(i => i.id === prod.id && i.sz === sz);
+            const ex = cart.find(i => String(i.id) === String(prod.id) && i.sz === sz);
             if (ex) ex.qty++; else cart.push({ ...prod, sz: sz || prod.sizes[0], col: col || prod.colors[0], qty: 1 });
             saveCart(); updCartBadge(); showNotif('<i class="fas fa-check"></i>', `${prod.name} u shtua në shportë!`);
         }
 
         function openMod(e, id) {
             e && e.stopPropagation();
-            const p = products.find(x => String(x.id) === String(id)); if(!p) return; curProd = p; selSz = p.sizes[0]; selCol = p.colors[0];
-            document.getElementById('m-emoji').textContent = p.emoji;
-            document.getElementById('m-emoji').style.fontSize = '7.5rem';
+            const p = products.find(x => String(x.id) === String(id)); if (!p) return; curProd = p; selSz = p.sizes[0]; selCol = p.colors[0];
+            // Foto ose emoji në modal
+            const mImg = document.getElementById('m-img');
+            const mEmoji = document.getElementById('m-emoji');
+            // Hiq foton e mëparshme nëse ekziston
+            mImg.querySelectorAll('.m-img-photo').forEach(el => el.remove());
+            if (p.image) {
+                const ph = document.createElement('img');
+                ph.className = 'm-img-photo';
+                ph.src = p.image + '?w=800&fm=webp&q=85';
+                ph.alt = p.name;
+                mImg.appendChild(ph);
+                mEmoji.style.display = 'none';
+            } else {
+                mEmoji.style.display = '';
+                mEmoji.innerHTML = p.emoji;
+                mEmoji.style.fontSize = '7.5rem';
+            }
             document.getElementById('m-brand').textContent = p.brand;
             document.getElementById('m-name').textContent = p.name;
             document.getElementById('m-stars').textContent = '★'.repeat(Math.floor(p.rating)) + '☆'.repeat(5 - Math.floor(p.rating));
@@ -2882,27 +2942,27 @@
             const ship = total >= 3000 ? 0 : 300;
             body.innerHTML = cart.map(item => `
     <div class="c-item">
-      <div class="c-item-img">${item.emoji}</div>
+      <div class="c-item-img">${item.image ? `<img src="${item.image}?w=120&fm=webp&q=70" style="width:100%;height:100%;object-fit:cover;border-radius:4px;" alt="${item.name}">` : item.emoji}</div>
       <div>
         <div class="c-iname">${item.name}</div>
         <div class="c-isize">${item.sz} · ${item.mat}</div>
         <div class="c-qty">
-          <button class="q-btn" onclick="chgQty(${item.id},'${item.sz}',-1)">−</button>
+          <button class="q-btn" onclick="chgQty('${item.id}','${item.sz}',-1)">−</button>
           <span class="q-n">${item.qty}</span>
-          <button class="q-btn" onclick="chgQty(${item.id},'${item.sz}',1)">+</button>
+          <button class="q-btn" onclick="chgQty('${item.id}','${item.sz}',1)">+</button>
         </div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
         <span class="c-iprice">${(item.price * item.qty).toLocaleString()} Lekë</span>
-        <button class="c-irm" onclick="rmItem(${item.id},'${item.sz}')"><i class="fas fa-times"></i></button>
+        <button class="c-irm" onclick="rmItem('${item.id}','${item.sz}')"><i class="fas fa-times"></i></button>
       </div>
     </div>`).join('');
             document.getElementById('c-sub-v').textContent = `${total.toLocaleString()} Lekë`;
             document.getElementById('c-ship').textContent = ship === 0 ? 'Falas' : '300 Lekë';
             document.getElementById('c-tot-v').textContent = `${(total + ship).toLocaleString()} Lekë`;
         }
-        function chgQty(id, sz, d) { const i = cart.find(x => x.id === id && x.sz === sz); if (!i) return; i.qty += d; if (i.qty <= 0) cart = cart.filter(x => !(x.id === id && x.sz === sz)); saveCart(); updCartBadge(); renderCart(); }
-        function rmItem(id, sz) { cart = cart.filter(x => !(x.id === id && x.sz === sz)); saveCart(); updCartBadge(); renderCart(); }
+        function chgQty(id, sz, d) { const i = cart.find(x => String(x.id) === String(id) && x.sz === sz); if (!i) return; i.qty += d; if (i.qty <= 0) cart = cart.filter(x => !(String(x.id) === String(id) && x.sz === sz)); saveCart(); updCartBadge(); renderCart(); }
+        function rmItem(id, sz) { cart = cart.filter(x => !(String(x.id) === String(id) && x.sz === sz)); saveCart(); updCartBadge(); renderCart(); }
         function clearCart() { cart = []; saveCart(); updCartBadge(); }
         function saveCart() { try { localStorage.setItem('aure-cart', JSON.stringify(cart)); } catch (e) { } }
         function updCartBadge() { const t = cart.reduce((s, i) => s + i.qty, 0), b = document.getElementById('cart-badge'); b.textContent = t; b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump'); }
@@ -2935,11 +2995,31 @@
         function updWishBadge() { const b = document.getElementById('wish-count'); b.textContent = wishlist.length; b.style.display = wishlist.length > 0 ? 'flex' : 'none'; }
         function showWishlist() {
             if (wishlist.length === 0) { showNotif('<i class="far fa-heart"></i>', 'Wishlist-i është bosh'); return; }
-            const wlist = products.filter(p => wishlist.includes(p.id));
+            const wlist = products.filter(p => wishlist.includes(String(p.id)));
             const grid = document.getElementById('prod-grid'); grid.innerHTML = '';
             document.getElementById('res-count').textContent = `Wishlist: ${wlist.length} produkte`;
             document.getElementById('lm-btn').style.display = 'none';
-            wlist.forEach((p, i) => { const c = document.createElement('div'); c.className = 'p-card'; c.style.animationDelay = `${i * .06}s`; c.innerHTML = `<div class="p-img" onclick="openMod(event,${p.id})"><div class="p-acts" style="transform:translateX(0)"><button class="p-act liked" onclick="toggleWish(event,${p.id})"><i class="fas fa-heart"></i></button></div><span class="p-emoji">${p.emoji}</span><button class="p-qadd" onclick="quickAdd(event,${p.id})">+ Shto në Shportë</button></div><div class="p-info"><div class="p-brand">${p.brand}</div><div class="p-name">${p.name}</div><div class="p-price"><span class="p-cur">${p.price.toLocaleString()} Lekë</span></div><div class="p-mat">${p.mat}</div></div>`; grid.appendChild(c); });
+            wlist.forEach((p, i) => {
+                const c = document.createElement('div'); c.className = 'p-card'; c.style.animationDelay = `${i * .06}s`;
+                c.innerHTML = `
+                  <div class="p-img" onclick="openMod(event,'${p.id}')">
+                    <div class="p-acts" style="transform:translateX(0)">
+                      <button class="p-act liked" onclick="toggleWish(event,'${p.id}')"><i class="fas fa-heart"></i></button>
+                    </div>
+                    ${p.image ? `<img class="p-img-photo" src="${p.image}?w=600&fm=webp&q=80" alt="${p.name}" loading="lazy">` : `<span class="p-emoji">${p.emoji}</span>`}
+                    <button class="p-qadd" onclick="quickAdd(event,'${p.id}')">+ Shto në Shportë</button>
+                  </div>
+                  <div class="p-info">
+                    <div class="p-brand">${p.brand}</div>
+                    <div class="p-name">${p.name}</div>
+                    <div class="p-price">
+                      <span class="p-cur">${p.price.toLocaleString()} Lekë</span>
+                      ${p.oldPrice ? `<span class="p-old">${p.oldPrice.toLocaleString()} Lekë</span>` : ''}
+                    </div>
+                    <div class="p-mat">${p.mat}</div>
+                  </div>`;
+                grid.appendChild(c);
+            });
             sg('products');
         }
 
@@ -2952,8 +3032,35 @@
             const grid = document.getElementById('prod-grid'); grid.innerHTML = '';
             document.getElementById('res-count').textContent = `Rezultate për "${q}": ${res.length}`;
             document.getElementById('lm-btn').style.display = 'none';
-            if (!res.length) { grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--warm)">Nuk u gjet asnjë produkt për "${q}"</div>`; }
-            else res.forEach((p, i) => { const c = document.createElement('div'); c.className = 'p-card'; c.style.animationDelay = `${i * .06}s`; c.innerHTML = `<div class="p-img" onclick="openMod(event,${p.id})">${p.tag ? `<span class="p-tag tag-${p.tag}">${p.tag === 'new' ? 'I Ri' : p.tag === 'sale' ? 'Sale' : '<i class="fas fa-fire"></i> Hot'}</span>` : ''}<span class="p-emoji">${p.emoji}</span><button class="p-qadd" onclick="quickAdd(event,${p.id})">+ Shto në Shportë</button></div><div class="p-info"><div class="p-brand">${p.brand}</div><div class="p-name">${p.name}</div><div class="p-price"><span class="p-cur">${p.price.toLocaleString()} Lekë</span>${p.oldPrice ? `<span class="p-old">${p.oldPrice.toLocaleString()} Lekë</span>` : ''}</div><div class="p-mat">${p.mat}</div></div>`; grid.appendChild(c); });
+            if (!res.length) {
+                grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--warm)">Nuk u gjet asnjë produkt për "${q}"</div>`;
+            } else {
+                res.forEach((p, i) => {
+                    const wd = wishlist.includes(String(p.id));
+                    const c = document.createElement('div'); c.className = 'p-card'; c.style.animationDelay = `${i * .06}s`;
+                    c.innerHTML = `
+                      <div class="p-img" onclick="openMod(event,'${p.id}')">
+                        ${p.tag ? `<span class="p-tag tag-${p.tag}">${p.tag === 'new' ? 'I Ri' : p.tag === 'sale' ? 'Sale' : '<i class="fas fa-fire"></i> Hot'}</span>` : ''}
+                        <div class="p-acts">
+                          <button class="p-act ${wd ? 'liked' : ''}" onclick="toggleWish(event,'${p.id}')">${wd ? '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>'}</button>
+                          <button class="p-act" onclick="openMod(event,'${p.id}')"><i class="fas fa-search"></i></button>
+                        </div>
+                        ${p.image ? `<img class="p-img-photo" src="${p.image}?w=600&fm=webp&q=80" alt="${p.name}" loading="lazy">` : `<span class="p-emoji">${p.emoji}</span>`}
+                        <button class="p-qadd" onclick="quickAdd(event,'${p.id}')">+ Shto në Shportë</button>
+                      </div>
+                      <div class="p-info">
+                        <div class="p-brand">${p.brand}</div>
+                        <div class="p-name">${p.name}</div>
+                        <div class="p-rating"><span class="stars">${'★'.repeat(Math.floor(p.rating))}${'☆'.repeat(5 - Math.floor(p.rating))}</span><span class="rcnt">(${p.reviews})</span></div>
+                        <div class="p-price">
+                          <span class="p-cur">${p.price.toLocaleString()} Lekë</span>
+                          ${p.oldPrice ? `<span class="p-old">${p.oldPrice.toLocaleString()} Lekë</span><span class="p-disc">-${Math.round((1 - p.price / p.oldPrice) * 100)}%</span>` : ''}
+                        </div>
+                        <div class="p-mat">${p.mat}</div>
+                      </div>`;
+                    grid.appendChild(c);
+                });
+            }
             sg('products');
         }
         document.getElementById('search-input').addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); if (e.key === 'Escape') toggleSearch(); });
@@ -2967,7 +3074,8 @@
         let ntTimer = null;
         function showNotif(ico, txt) {
             const n = document.getElementById('notification');
-            document.getElementById('n-ico').textContent = ico; document.getElementById('n-txt').textContent = txt;
+            document.getElementById('n-ico').innerHTML = ico;
+            document.getElementById('n-txt').innerHTML = txt;
             n.classList.add('show'); clearTimeout(ntTimer); ntTimer = setTimeout(() => n.classList.remove('show'), 3200);
         }
 
