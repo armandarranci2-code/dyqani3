@@ -1,1 +1,2982 @@
+<!DOCTYPE html>
+<html lang="sq">
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matmazel Albania — Çanta, Portofole & Bizhuteri</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        :root {
+            --cream: #F7F3EE;
+            --dark: #1C1410;
+            --gold: #B8955A;
+            --rose: #C9897A;
+            --deep: #2C1810;
+            --sand: #E0D0BC;
+            --warm: #7A6050;
+            --light: #FBF8F4;
+            --white: #FFFFFF
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            overflow-x: hidden
+        }
+
+        ::-webkit-scrollbar {
+            width: 5px
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--cream)
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 3px
+        }
+
+        /* LOADER */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: var(--deep);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity .8s, visibility .8s
+        }
+
+        #loader.hidden {
+            opacity: 0;
+            visibility: hidden
+        }
+
+        .loader-ring {
+            width: 60px;
+            height: 60px;
+            border: 2px solid rgba(184, 149, 90, .2);
+            border-top-color: var(--gold);
+            border-radius: 50%;
+            animation: spin .9s linear infinite;
+            margin-bottom: 1.5rem
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        .loader-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            color: var(--gold);
+            letter-spacing: .4em;
+            font-weight: 300
+        }
+
+        /* NOTIFICATION */
+        #notification {
+            position: fixed;
+            top: 85px;
+            right: 24px;
+            background: var(--deep);
+            color: var(--cream);
+            padding: 13px 22px;
+            font-size: .82rem;
+            letter-spacing: .05em;
+            transform: translateX(220%);
+            transition: transform .45s cubic-bezier(.34, 1.56, .64, 1);
+            z-index: 9998;
+            border-left: 3px solid var(--gold);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, .25)
+        }
+
+        #notification.show {
+            transform: translateX(0)
+        }
+
+        /* SEARCH */
+        #search-bar {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            padding: 18px 5%;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, .08);
+            z-index: 999;
+            transform: translateY(-120%);
+            transition: transform .35s cubic-bezier(.25, .46, .45, .94);
+            display: flex;
+            gap: 0
+        }
+
+        #search-bar.open {
+            transform: translateY(0)
+        }
+
+        #search-input {
+            flex: 1;
+            padding: 14px 22px;
+            border: 1px solid var(--sand);
+            border-right: none;
+            font-family: 'DM Sans', sans-serif;
+            font-size: .9rem;
+            outline: none;
+            color: var(--dark);
+            background: var(--cream)
+        }
+
+        #search-input:focus {
+            border-color: var(--gold)
+        }
+
+        #search-submit {
+            background: var(--deep);
+            color: var(--cream);
+            border: none;
+            padding: 14px 28px;
+            font-size: .78rem;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
+            transition: background .3s
+        }
+
+        #search-submit:hover {
+            background: var(--gold);
+            color: var(--deep)
+        }
+
+        /* NAV */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: rgba(251, 248, 244, .96);
+            backdrop-filter: blur(14px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5%;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(184, 149, 90, .15);
+            transition: all .3s
+        }
+
+        nav.scrolled {
+            background: rgba(28, 20, 16, .97);
+            border-bottom-color: rgba(184, 149, 90, .25)
+        }
+
+        nav.scrolled .nav-logo,
+        nav.scrolled .nav-links a,
+        nav.scrolled .nav-icon {
+            color: var(--cream)
+        }
+
+        .nav-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.9rem;
+            font-weight: 300;
+            letter-spacing: .25em;
+            color: var(--dark);
+            text-decoration: none
+        }
+
+        .nav-logo span {
+            color: var(--gold)
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.2rem;
+            list-style: none
+        }
+
+        .nav-links a {
+            font-size: .75rem;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            padding-bottom: 4px;
+            transition: color .3s;
+            cursor: pointer
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--gold);
+            transition: width .35s
+        }
+
+        .nav-links a:hover::after,
+        nav.scrolled .nav-links a:hover::after {
+            width: 100%
+        }
+
+        .nav-links a:hover {
+            color: var(--gold)
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.4rem
+        }
+
+        .nav-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.15rem;
+            color: var(--dark);
+            transition: all .3s;
+            position: relative;
+            padding: 4px
+        }
+
+        .nav-icon:hover {
+            color: var(--gold);
+            transform: scale(1.1)
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--gold);
+            color: var(--deep);
+            width: 17px;
+            height: 17px;
+            border-radius: 50%;
+            font-size: .6rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center
+        }
+
+        .cart-badge.bump {
+            animation: bump .3s ease
+        }
+
+        @keyframes bump {
+
+            0%,
+            100% {
+                transform: scale(1)
+            }
+
+            50% {
+                transform: scale(1.5)
+            }
+        }
+
+        .wish-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--rose);
+            color: white;
+            width: 17px;
+            height: 17px;
+            border-radius: 50%;
+            font-size: .6rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            background: none;
+            border: none
+        }
+
+        .hamburger span {
+            width: 24px;
+            height: 1.5px;
+            background: var(--dark);
+            transition: all .3s;
+            display: block
+        }
+
+        /* HERO */
+        #hero {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 55% 45%;
+            padding-top: 70px;
+            overflow: hidden;
+            background: var(--cream)
+        }
+
+        .hero-left {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 7% 6% 7% 8%;
+            animation: fadeUp .9s ease .4s both
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .hero-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            font-size: .68rem;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            padding: 7px 18px;
+            margin-bottom: 2rem;
+            font-weight: 500;
+            width: fit-content
+        }
+
+        .hero-chip::before {
+            content: '<i class="fas fa-diamond" style="font-size: 0.7em;"></i>';
+            font-size: .5rem
+        }
+
+        .hero-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(3.2rem, 5.5vw, 6rem);
+            line-height: 1;
+            font-weight: 300;
+            margin-bottom: 1.8rem;
+            color: var(--dark)
+        }
+
+        .hero-title em {
+            display: block;
+            color: var(--gold);
+            font-style: italic;
+            font-size: 1.1em
+        }
+
+        .hero-title small {
+            font-size: .45em;
+            letter-spacing: .3em;
+            text-transform: uppercase;
+            color: var(--warm);
+            font-style: normal;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 300
+        }
+
+        .hero-sub {
+            font-size: .92rem;
+            color: var(--warm);
+            line-height: 1.85;
+            margin-bottom: 2.5rem;
+            max-width: 380px
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 3rem
+        }
+
+        .btn-dark {
+            background: var(--deep);
+            color: var(--cream);
+            padding: 15px 34px;
+            font-size: .78rem;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+            border: none;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
+            transition: all .3s
+        }
+
+        .btn-dark:hover {
+            background: var(--gold);
+            color: var(--deep);
+            transform: translateY(-2px)
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--dark);
+            padding: 15px 34px;
+            font-size: .78rem;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+            border: 1px solid var(--dark);
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
+            transition: all .3s
+        }
+
+        .btn-ghost:hover {
+            background: var(--deep);
+            color: var(--cream);
+            border-color: var(--deep)
+        }
+
+        .hero-badges {
+            display: flex;
+            gap: 2rem
+        }
+
+        .h-badge {
+            display: flex;
+            flex-direction: column
+        }
+
+        .h-badge-num {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            color: var(--gold);
+            line-height: 1;
+            font-weight: 400
+        }
+
+        .h-badge-txt {
+            font-size: .68rem;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--warm)
+        }
+
+        .hero-right {
+            position: relative;
+            overflow: hidden;
+            background: var(--deep)
+        }
+
+        .hero-mosaic {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            height: 100%;
+            gap: 2px
+        }
+
+        .mosaic-cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5.5rem;
+            background: rgba(255, 255, 255, .03);
+            transition: background .4s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden
+        }
+
+        .mosaic-cell:hover {
+            background: rgba(184, 149, 90, .08)
+        }
+
+        .mosaic-cell:first-child {
+            grid-row: span 2;
+            font-size: 7rem
+        }
+
+        .mosaic-label {
+            position: absolute;
+            bottom: 14px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: .65rem;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, .5);
+            transition: color .3s
+        }
+
+        .mosaic-cell:hover .mosaic-label {
+            color: var(--gold)
+        }
+
+        .hero-badge-float {
+            position: absolute;
+            bottom: 12%;
+            right: 8%;
+            background: var(--gold);
+            color: var(--deep);
+            padding: 14px 18px;
+            text-align: center;
+            animation: float 4s ease-in-out infinite
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0)
+            }
+
+            50% {
+                transform: translateY(-12px)
+            }
+        }
+
+        .float-num {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.6rem;
+            font-weight: 600;
+            line-height: 1
+        }
+
+        .float-txt {
+            font-size: .6rem;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            font-weight: 500
+        }
+
+        /* MARQUEE */
+        .marquee-wrap {
+            background: var(--deep);
+            padding: 14px 0;
+            overflow: hidden;
+            white-space: nowrap
+        }
+
+        .marquee-inner {
+            display: inline-flex;
+            gap: 2.5rem;
+            animation: marquee 22s linear infinite
+        }
+
+        @keyframes marquee {
+            from {
+                transform: translateX(0)
+            }
+
+            to {
+                transform: translateX(-50%)
+            }
+        }
+
+        .m-item {
+            font-size: .7rem;
+            letter-spacing: .22em;
+            text-transform: uppercase;
+            color: rgba(224, 208, 188, .6);
+            display: flex;
+            align-items: center;
+            gap: 1.2rem
+        }
+
+        .m-item::after {
+            content: '<i class="fas fa-diamond" style="font-size: 0.7em;"></i>';
+            color: var(--gold);
+            font-size: .45rem
+        }
+
+        /* SECTIONS */
+        section {
+            padding: 90px 5%
+        }
+
+        .sec-head {
+            text-align: center;
+            margin-bottom: 56px
+        }
+
+        .sec-sup {
+            font-size: .68rem;
+            letter-spacing: .28em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: .9rem;
+            display: block;
+            font-weight: 500
+        }
+
+        .sec-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2rem, 4vw, 3.2rem);
+            font-weight: 300;
+            line-height: 1.15;
+            color: var(--dark)
+        }
+
+        /* CATEGORIES */
+        #categories {
+            background: var(--cream)
+        }
+
+        .cat-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3px
+        }
+
+        .cat-card {
+            position: relative;
+            height: 420px;
+            overflow: hidden;
+            cursor: pointer;
+            background: var(--deep)
+        }
+
+        .cat-card:first-child {
+            grid-column: span 2
+        }
+
+        .cat-bg {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 7rem;
+            transition: transform .7s cubic-bezier(.25, .46, .45, .94);
+            filter: drop-shadow(0 20px 40px rgba(0, 0, 0, .4))
+        }
+
+        .cat-card:hover .cat-bg {
+            transform: scale(1.12)
+        }
+
+        .cat-veil {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(160deg, rgba(28, 20, 16, .15) 0%, rgba(28, 20, 16, .7) 100%);
+            transition: background .4s
+        }
+
+        .cat-card:hover .cat-veil {
+            background: linear-gradient(160deg, rgba(28, 20, 16, .2) 0%, rgba(28, 20, 16, .85) 100%)
+        }
+
+        .cat-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 32px 30px;
+            transform: translateY(40px);
+            transition: transform .4s cubic-bezier(.25, .46, .45, .94)
+        }
+
+        .cat-card:hover .cat-info {
+            transform: translateY(0)
+        }
+
+        .cat-tag {
+            font-size: .62rem;
+            letter-spacing: .22em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 6px;
+            font-weight: 500
+        }
+
+        .cat-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            color: var(--cream);
+            font-weight: 300;
+            margin-bottom: 4px
+        }
+
+        .cat-cnt {
+            font-size: .75rem;
+            color: rgba(224, 208, 188, .7);
+            margin-bottom: 16px
+        }
+
+        .cat-arrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--gold);
+            color: var(--deep);
+            font-size: .7rem;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            padding: 9px 20px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: all .35s .05s
+        }
+
+        .cat-card:hover .cat-arrow {
+            opacity: 1;
+            transform: translateY(0)
+        }
+
+        .cat-arrow:hover {
+            background: var(--cream)
+        }
+
+        /* PRODUCTS */
+        #products {
+            background: var(--light)
+        }
+
+        .filter-row {
+            display: flex;
+            gap: .7rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 44px
+        }
+
+        .f-btn {
+            background: none;
+            border: 1px solid var(--sand);
+            padding: 9px 22px;
+            font-size: .73rem;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all .3s;
+            font-family: 'DM Sans', sans-serif;
+            color: var(--warm);
+            font-weight: 500
+        }
+
+        .f-btn.active,
+        .f-btn:hover {
+            background: var(--deep);
+            color: var(--cream);
+            border-color: var(--deep)
+        }
+
+        .sort-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--sand)
+        }
+
+        .res-count {
+            font-size: .82rem;
+            color: var(--warm)
+        }
+
+        .sort-sel {
+            background: none;
+            border: 1px solid var(--sand);
+            padding: 8px 14px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: .78rem;
+            cursor: pointer;
+            color: var(--dark);
+            outline: none
+        }
+
+        .sort-sel:focus {
+            border-color: var(--gold)
+        }
+
+        .prod-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            gap: 1.8rem
+        }
+
+        .p-card {
+            background: var(--white);
+            cursor: pointer;
+            transition: transform .4s, box-shadow .4s;
+            position: relative;
+            overflow: hidden;
+            animation: fadeUp .5s ease both
+        }
+
+        .p-card:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 28px 55px rgba(0, 0, 0, .1)
+        }
+
+        .p-img {
+            height: 300px;
+            background: var(--cream);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden
+        }
+
+        .p-emoji {
+            font-size: 6.5rem;
+            transition: transform .6s cubic-bezier(.25, .46, .45, .94)
+        }
+
+        .p-card:hover .p-emoji {
+            transform: scale(1.1) rotate(-3deg)
+        }
+
+        .p-tag {
+            position: absolute;
+            top: 13px;
+            left: 13px;
+            font-size: .62rem;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            padding: 5px 11px;
+            font-weight: 600;
+            z-index: 1
+        }
+
+        .tag-new {
+            background: var(--deep);
+            color: var(--gold)
+        }
+
+        .tag-sale {
+            background: #A8392E;
+            color: white
+        }
+
+        .tag-hot {
+            background: var(--gold);
+            color: var(--deep)
+        }
+
+        .tag-ltd {
+            background: var(--rose);
+            color: white
+        }
+
+        .p-acts {
+            position: absolute;
+            top: 13px;
+            right: 13px;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            transform: translateX(44px);
+            transition: transform .4s cubic-bezier(.34, 1.56, .64, 1);
+            z-index: 1
+        }
+
+        .p-card:hover .p-acts {
+            transform: translateX(0)
+        }
+
+        .p-act {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .95rem;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, .1);
+            transition: all .3s
+        }
+
+        .p-act:hover {
+            background: var(--gold);
+            transform: scale(1.1)
+        }
+
+        .p-act.liked {
+            background: #FFF0EE
+        }
+
+        .p-qadd {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--deep);
+            color: var(--cream);
+            border: none;
+            padding: 13px;
+            font-size: .73rem;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
+            transform: translateY(100%);
+            transition: transform .4s
+        }
+
+        .p-card:hover .p-qadd {
+            transform: translateY(0)
+        }
+
+        .p-qadd:hover {
+            background: var(--gold);
+            color: var(--deep)
+        }
+
+        .p-info {
+            padding: 18px 18px 20px
+        }
+
+        .p-brand {
+            font-size: .67rem;
+            color: var(--gold);
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+            font-weight: 500
+        }
+
+        .p-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.12rem;
+            margin-bottom: 7px;
+            font-weight: 400;
+            line-height: 1.3
+        }
+
+        .p-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 10px
+        }
+
+        .stars {
+            color: var(--gold);
+            font-size: .75rem;
+            letter-spacing: 1px
+        }
+
+        .rcnt {
+            font-size: .72rem;
+            color: var(--warm)
+        }
+
+        .p-price {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            flex-wrap: wrap
+        }
+
+        .p-cur {
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: var(--dark)
+        }
+
+        .p-old {
+            font-size: .85rem;
+            color: var(--sand);
+            text-decoration: line-through
+        }
+
+        .p-disc {
+            font-size: .72rem;
+            color: #A8392E;
+            font-weight: 600
+        }
+
+        .p-mat {
+            font-size: .72rem;
+            color: var(--warm);
+            margin-top: 7px;
+            letter-spacing: .04em
+        }
+
+        .lm-wrap {
+            text-align: center;
+            margin-top: 44px
+        }
+
+        .lm-btn {
+            background: transparent;
+            border: 1px solid var(--dark);
+            padding: 14px 44px;
+            font-size: .78rem;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
+            color: var(--dark);
+            transition: all .3s
+        }
+
+        .lm-btn:hover {
+            background: var(--deep);
+            color: var(--cream);
+            border-color: var(--deep)
+        }
+
+        /* FEATURE STRIP */
+        #features {
+            background: var(--deep);
+            padding: 60px 5%
+        }
+
+        .feat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem
+        }
+
+        .feat-item {
+            text-align: center;
+            padding: 10px
+        }
+
+        .feat-icon {
+            font-size: 2rem;
+            margin-bottom: .9rem;
+            display: block
+        }
+
+        .feat-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            color: var(--cream);
+            margin-bottom: .4rem;
+            font-weight: 400
+        }
+
+        .feat-txt {
+            font-size: .78rem;
+            color: rgba(224, 208, 188, .6);
+            line-height: 1.6;
+            letter-spacing: .03em
+        }
+
+        /* BANNER */
+        #banner {
+            background: var(--cream);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            gap: 0;
+            padding: 0;
+            min-height: 55vh;
+            overflow: hidden
+        }
+
+        .ban-img {
+            background: var(--deep);
+            height: 100%;
+            min-height: 55vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10rem;
+            position: relative;
+            overflow: hidden
+        }
+
+        .ban-img::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(184, 149, 90, .08) 0%, transparent 60%)
+        }
+
+        .ban-spin {
+            position: absolute;
+            top: 12%;
+            right: 12%;
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            background: var(--gold);
+            color: var(--deep);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.15rem;
+            line-height: 1.1;
+            animation: spin-slow 9s linear infinite;
+            flex-shrink: 0
+        }
+
+        @keyframes spin-slow {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        .ban-spin small {
+            font-size: .52rem;
+            letter-spacing: .06em;
+            text-transform: uppercase
+        }
+
+        .ban-cnt {
+            padding: 7% 8%
+        }
+
+        .ban-sup {
+            font-size: .68rem;
+            letter-spacing: .25em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 1rem;
+            display: block
+        }
+
+        .ban-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2.2rem, 4vw, 3.8rem);
+            font-weight: 300;
+            line-height: 1.1;
+            margin-bottom: 1.4rem;
+            color: var(--dark)
+        }
+
+        .ban-title b {
+            color: var(--gold);
+            font-weight: 400
+        }
+
+        .ban-txt {
+            font-size: .88rem;
+            line-height: 1.85;
+            color: var(--warm);
+            margin-bottom: 2rem;
+            max-width: 380px
+        }
+
+        /* REVIEWS */
+        #reviews {
+            background: var(--light)
+        }
+
+        .rev-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.8rem
+        }
+
+        .rev-card {
+            background: var(--white);
+            padding: 28px;
+            position: relative;
+            transition: transform .35s, box-shadow .35s;
+            border-bottom: 2px solid transparent
+        }
+
+        .rev-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 18px 38px rgba(0, 0, 0, .07);
+            border-bottom-color: var(--gold)
+        }
+
+        .rev-quote {
+            font-size: 2.5rem;
+            color: var(--gold);
+            line-height: 1;
+            margin-bottom: 12px;
+            font-family: 'Cormorant Garamond', serif;
+            opacity: .5
+        }
+
+        .rev-stars {
+            color: var(--gold);
+            margin-bottom: 12px;
+            font-size: .85rem;
+            letter-spacing: 2px
+        }
+
+        .rev-txt {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.02rem;
+            line-height: 1.7;
+            color: var(--dark);
+            font-style: italic;
+            margin-bottom: 18px
+        }
+
+        .rev-person {
+            display: flex;
+            align-items: center;
+            gap: 11px
+        }
+
+        .rev-av {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--cream);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem
+        }
+
+        .rev-name {
+            font-size: .82rem;
+            font-weight: 500;
+            margin-bottom: 2px
+        }
+
+        .rev-prod {
+            font-size: .72rem;
+            color: var(--gold);
+            letter-spacing: .06em
+        }
+
+        /* NEWSLETTER */
+        #newsletter {
+            background: var(--deep);
+            text-align: center;
+            padding: 90px 5%
+        }
+
+        .nl-box {
+            max-width: 520px;
+            margin: 0 auto
+        }
+
+        .nl-sup {
+            font-size: .68rem;
+            letter-spacing: .28em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: .8rem;
+            display: block
+        }
+
+        .nl-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.9rem, 3.5vw, 2.8rem);
+            font-weight: 300;
+            color: var(--cream);
+            margin-bottom: 1rem
+        }
+
+        .nl-txt {
+            font-size: .87rem;
+            color: rgba(224, 208, 188, .65);
+            margin-bottom: 2.2rem;
+            line-height: 1.7
+        }
+
+        .nl-form {
+            display: flex;
+            max-width: 420px;
+            margin: 0 auto
+        }
+
+        .nl-inp {
+            flex: 1;
+            padding: 15px 20px;
+            border: 1px solid rgba(184, 149, 90, .3);
+            border-right: none;
+            background: rgba(255, 255, 255, .06);
+            font-family: 'DM Sans', sans-serif;
+            font-size: .85rem;
+            outline: none;
+            color: var(--cream);
+            transition: border-color .3s
+        }
+
+        .nl-inp::placeholder {
+            color: rgba(224, 208, 188, .4)
+        }
+
+        .nl-inp:focus {
+            border-color: var(--gold)
+        }
+
+        .nl-btn {
+            background: var(--gold);
+            color: var(--deep);
+            border: none;
+            padding: 15px 26px;
+            font-size: .73rem;
+            letter-spacing: .13em;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 600;
+            transition: all .3s;
+            flex-shrink: 0
+        }
+
+        .nl-btn:hover {
+            background: var(--cream)
+        }
+
+        /* FOOTER */
+        footer {
+            background: var(--dark);
+            color: var(--cream);
+            padding: 70px 5% 36px
+        }
+
+        .foot-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 50px
+        }
+
+        .foot-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.9rem;
+            font-weight: 300;
+            letter-spacing: .25em;
+            color: var(--cream);
+            margin-bottom: .9rem;
+            display: block
+        }
+
+        .foot-logo span {
+            color: var(--gold)
+        }
+
+        .foot-desc {
+            font-size: .82rem;
+            color: rgba(224, 208, 188, .55);
+            line-height: 1.8;
+            margin-bottom: 1.4rem
+        }
+
+        .soc-row {
+            display: flex;
+            gap: .8rem
+        }
+
+        .soc-btn {
+            width: 36px;
+            height: 36px;
+            border: 1px solid rgba(255, 255, 255, .12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .95rem;
+            cursor: pointer;
+            transition: all .3s;
+            background: none;
+            color: var(--cream)
+        }
+
+        .soc-btn:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+            transform: translateY(-3px)
+        }
+
+        .foot-title {
+            font-size: .7rem;
+            letter-spacing: .22em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 1.3rem;
+            font-weight: 500
+        }
+
+        .foot-links {
+            list-style: none
+        }
+
+        .foot-links li {
+            margin-bottom: .7rem
+        }
+
+        .foot-links a {
+            font-size: .82rem;
+            color: rgba(224, 208, 188, .55);
+            text-decoration: none;
+            transition: color .3s;
+            cursor: pointer
+        }
+
+        .foot-links a:hover {
+            color: var(--gold)
+        }
+
+        .foot-bot {
+            border-top: 1px solid rgba(255, 255, 255, .07);
+            padding-top: 26px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem
+        }
+
+        .foot-copy {
+            font-size: .77rem;
+            color: rgba(224, 208, 188, .4)
+        }
+
+        .pay-icons {
+            display: flex;
+            gap: 7px;
+            font-size: 1.4rem
+        }
+
+        /* CART */
+        #cart-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .55);
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all .3s;
+            backdrop-filter: blur(3px)
+        }
+
+        #cart-overlay.open {
+            opacity: 1;
+            visibility: visible
+        }
+
+        #cart-side {
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100vh;
+            width: 410px;
+            background: var(--white);
+            z-index: 2001;
+            transform: translateX(100%);
+            transition: transform .42s cubic-bezier(.25, .46, .45, .94);
+            display: flex;
+            flex-direction: column
+        }
+
+        #cart-side.open {
+            transform: translateX(0)
+        }
+
+        .cart-head {
+            padding: 22px 26px;
+            border-bottom: 1px solid var(--cream);
+            display: flex;
+            align-items: center;
+            justify-content: space-between
+        }
+
+        .cart-ttl {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.45rem
+        }
+
+        .cart-x {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.3rem;
+            color: var(--warm);
+            transition: color .3s
+        }
+
+        .cart-x:hover {
+            color: var(--dark)
+        }
+
+        .cart-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 22px 26px
+        }
+
+        .cart-empty-msg {
+            text-align: center;
+            padding: 50px 20px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.05rem;
+            color: var(--warm)
+        }
+
+        .ce-icon {
+            font-size: 3.5rem;
+            margin-bottom: .8rem;
+            display: block
+        }
+
+        .c-item {
+            display: grid;
+            grid-template-columns: 75px 1fr auto;
+            gap: 13px;
+            align-items: start;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--cream)
+        }
+
+        .c-item-img {
+            width: 75px;
+            height: 75px;
+            background: var(--cream);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem
+        }
+
+        .c-iname {
+            font-weight: 500;
+            font-size: .87rem;
+            margin-bottom: 3px
+        }
+
+        .c-isize {
+            font-size: .72rem;
+            color: var(--warm);
+            margin-bottom: 7px
+        }
+
+        .c-qty {
+            display: flex;
+            align-items: center;
+            gap: 9px
+        }
+
+        .q-btn {
+            width: 24px;
+            height: 24px;
+            border: 1px solid var(--sand);
+            background: none;
+            cursor: pointer;
+            font-size: .85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .2s
+        }
+
+        .q-btn:hover {
+            background: var(--deep);
+            color: var(--cream);
+            border-color: var(--deep)
+        }
+
+        .q-n {
+            font-size: .82rem;
+            font-weight: 500;
+            min-width: 18px;
+            text-align: center
+        }
+
+        .c-iprice {
+            font-size: .87rem;
+            font-weight: 600
+        }
+
+        .c-irm {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--sand);
+            font-size: .95rem;
+            transition: color .3s;
+            margin-top: 3px
+        }
+
+        .c-irm:hover {
+            color: #A8392E
+        }
+
+        .cart-foot {
+            padding: 22px 26px;
+            border-top: 1px solid var(--cream)
+        }
+
+        .c-sub {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 7px;
+            font-size: .82rem;
+            color: var(--warm)
+        }
+
+        .c-tot {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.08rem;
+            font-weight: 600;
+            margin-bottom: 18px;
+            padding-top: 11px;
+            border-top: 1px solid var(--cream)
+        }
+
+        .c-chk {
+            width: 100%;
+            background: var(--deep);
+            color: var(--cream);
+            border: none;
+            padding: 15px;
+            font-size: .82rem;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
+            margin-bottom: 9px;
+            transition: background .3s
+        }
+
+        .c-chk:hover {
+            background: var(--gold);
+            color: var(--deep)
+        }
+
+        .c-cont {
+            width: 100%;
+            background: transparent;
+            color: var(--warm);
+            border: 1px solid var(--sand);
+            padding: 13px;
+            font-size: .77rem;
+            letter-spacing: .11em;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: all .3s
+        }
+
+        .c-cont:hover {
+            border-color: var(--dark);
+            color: var(--dark)
+        }
+
+        /* MODAL */
+        #mod-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .65);
+            z-index: 3000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all .3s;
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 18px
+        }
+
+        #mod-overlay.open {
+            opacity: 1;
+            visibility: visible
+        }
+
+        #prod-modal {
+            background: var(--white);
+            max-width: 880px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            transform: scale(.88);
+            transition: transform .42s cubic-bezier(.34, 1.56, .64, 1)
+        }
+
+        #mod-overlay.open #prod-modal {
+            transform: scale(1)
+        }
+
+        .m-img {
+            background: var(--cream);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 380px;
+            position: relative;
+            font-size: 7.5rem
+        }
+
+        .m-close {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            background: var(--white);
+            border: none;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: .95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, .1);
+            transition: all .3s;
+            z-index: 2
+        }
+
+        .m-close:hover {
+            background: var(--deep);
+            color: white
+        }
+
+        .m-cnt {
+            padding: 36px;
+            overflow-y: auto
+        }
+
+        .m-brand {
+            font-size: .67rem;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 7px;
+            font-weight: 500
+        }
+
+        .m-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.85rem;
+            font-weight: 300;
+            margin-bottom: 10px
+        }
+
+        .m-rat {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            margin-bottom: 18px
+        }
+
+        .m-pbox {
+            margin-bottom: 22px
+        }
+
+        .m-price {
+            font-size: 1.75rem;
+            font-weight: 300;
+            color: var(--dark)
+        }
+
+        .m-oprice {
+            font-size: .95rem;
+            color: var(--sand);
+            text-decoration: line-through;
+            margin-left: 9px
+        }
+
+        .m-lbl {
+            font-size: .72rem;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--warm);
+            margin-bottom: 9px;
+            font-weight: 500
+        }
+
+        .sz-row {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+            margin-bottom: 22px
+        }
+
+        .sz-btn {
+            min-width: 42px;
+            height: 40px;
+            padding: 0 10px;
+            border: 1px solid var(--sand);
+            background: none;
+            cursor: pointer;
+            font-size: .78rem;
+            font-family: 'DM Sans', sans-serif;
+            transition: all .2s;
+            letter-spacing: .04em
+        }
+
+        .sz-btn:hover,
+        .sz-btn.sel {
+            background: var(--deep);
+            color: white;
+            border-color: var(--deep)
+        }
+
+        .sz-btn.na {
+            opacity: .3;
+            cursor: not-allowed;
+            text-decoration: line-through
+        }
+
+        .col-row {
+            display: flex;
+            gap: 9px;
+            margin-bottom: 26px;
+            flex-wrap: wrap
+        }
+
+        .m-col {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all .2s
+        }
+
+        .m-col.sel {
+            border-color: var(--deep);
+            transform: scale(1.25)
+        }
+
+        .m-add {
+            width: 100%;
+            background: var(--deep);
+            color: var(--cream);
+            border: none;
+            padding: 15px;
+            font-size: .82rem;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
+            margin-bottom: 9px;
+            transition: all .3s
+        }
+
+        .m-add:hover {
+            background: var(--gold);
+            color: var(--deep)
+        }
+
+        .m-wish {
+            width: 100%;
+            background: transparent;
+            color: var(--dark);
+            border: 1px solid var(--sand);
+            padding: 13px;
+            font-size: .77rem;
+            letter-spacing: .11em;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: all .3s
+        }
+
+        .m-wish:hover {
+            border-color: var(--dark)
+        }
+
+        .m-desc {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--cream);
+            font-size: .83rem;
+            line-height: 1.75;
+            color: var(--warm)
+        }
+
+        .m-meta {
+            margin-top: 14px;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap
+        }
+
+        .m-meta span {
+            font-size: .72rem;
+            color: var(--warm);
+            background: var(--cream);
+            padding: 4px 10px;
+            letter-spacing: .06em
+        }
+
+        /* CHECKOUT MODAL */
+        #chk-modal {
+            background: var(--white);
+            max-width: 580px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(.88);
+            transition: transform .42s cubic-bezier(.34, 1.56, .64, 1);
+            padding: 38px
+        }
+
+        #mod-overlay.open #chk-modal {
+            transform: scale(1)
+        }
+
+        .chk-ttl {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.9rem;
+            font-weight: 300;
+            margin-bottom: 26px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center
+        }
+
+        .ord-sum {
+            background: var(--cream);
+            padding: 18px;
+            margin-bottom: 22px
+        }
+
+        .os-ttl {
+            font-size: .75rem;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            font-weight: 500
+        }
+
+        .os-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: .82rem;
+            margin-bottom: 7px;
+            color: var(--warm)
+        }
+
+        .os-div {
+            border: none;
+            border-top: 1px solid var(--sand);
+            margin: 10px 0
+        }
+
+        .os-tot {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: .95rem;
+            color: var(--dark)
+        }
+
+        .fg {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 18px
+        }
+
+        .fgrp {
+            display: flex;
+            flex-direction: column;
+            gap: 5px
+        }
+
+        .fgrp.full {
+            grid-column: span 2
+        }
+
+        .flbl {
+            font-size: .7rem;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--warm);
+            font-weight: 500
+        }
+
+        .finp {
+            padding: 11px 14px;
+            border: 1px solid var(--sand);
+            font-family: 'DM Sans', sans-serif;
+            font-size: .87rem;
+            outline: none;
+            transition: border-color .3s;
+            color: var(--dark);
+            background: var(--cream)
+        }
+
+        .finp:focus {
+            border-color: var(--gold);
+            background: white
+        }
+
+        .pord-btn {
+            width: 100%;
+            background: var(--deep);
+            color: var(--cream);
+            border: none;
+            padding: 16px;
+            font-size: .82rem;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
+            transition: all .3s
+        }
+
+        .pord-btn:hover {
+            background: var(--gold);
+            color: var(--deep)
+        }
+
+        .succ-screen {
+            text-align: center;
+            padding: 36px;
+            display: none;
+            flex-direction: column;
+            align-items: center
+        }
+
+        .succ-screen.on {
+            display: flex
+        }
+
+        .succ-ico {
+            font-size: 3.5rem;
+            margin-bottom: .8rem
+        }
+
+        .succ-ttl {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.9rem;
+            margin-bottom: .4rem
+        }
+
+        /* RESPONSIVE */
+        @media(max-width:1024px) {
+            .cat-grid {
+                grid-template-columns: 1fr 1fr
+            }
+
+            .cat-card:first-child {
+                grid-column: span 2
+            }
+
+            .feat-grid {
+                grid-template-columns: 1fr 1fr
+            }
+
+            .foot-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 2rem
+            }
+        }
+
+        @media(max-width:768px) {
+            .nav-links {
+                display: none
+            }
+
+            .hamburger {
+                display: flex
+            }
+
+            #hero {
+                grid-template-columns: 1fr
+            }
+
+            .hero-right {
+                display: none
+            }
+
+            .hero-left {
+                padding: 8% 5%
+            }
+
+            #banner {
+                grid-template-columns: 1fr
+            }
+
+            .ban-img {
+                display: none
+            }
+
+            .ban-cnt {
+                padding: 10% 5%
+            }
+
+            .cat-grid {
+                grid-template-columns: 1fr
+            }
+
+            .cat-card:first-child {
+                grid-column: span 1
+            }
+
+            .rev-grid {
+                grid-template-columns: 1fr
+            }
+
+            .foot-grid {
+                grid-template-columns: 1fr
+            }
+
+            #prod-modal {
+                grid-template-columns: 1fr
+            }
+
+            .m-img {
+                min-height: 220px
+            }
+
+            .fg {
+                grid-template-columns: 1fr
+            }
+
+            .fgrp.full {
+                grid-column: span 1
+            }
+
+            #cart-side {
+                width: 100%;
+                max-width: 360px
+            }
+
+            .nl-form {
+                flex-direction: column
+            }
+
+            .nl-inp {
+                border-right: 1px solid rgba(184, 149, 90, .3);
+                border-bottom: none
+            }
+        }
+
+        /* Font Awesome Icon Styles */
+        .fas,
+        .far,
+        .fab {
+            display: inline-block;
+            font-style: normal;
+            font-variant: normal;
+            text-rendering: auto;
+            line-height: 1;
+        }
+
+        .p-emoji i,
+        .mosaic-cell i,
+        .cat-bg i,
+        .ban-img i,
+        #m-emoji i,
+        .c-item-img i {
+            font-size: inherit;
+        }
+
+        .nav-icon i {
+            font-size: 1.15rem;
+        }
+
+        .feat-icon i {
+            font-size: 2rem;
+        }
+
+        .soc-btn i {
+            font-size: .95rem;
+        }
+
+        .pay-icons i {
+            font-size: 1.4rem;
+        }
+
+        .ce-icon i {
+            font-size: 3.5rem;
+        }
+
+        .succ-ico i {
+            font-size: 3.5rem;
+        }
+
+        .rev-av i {
+            font-size: 1.2rem;
+        }
+
+        .p-act i {
+            font-size: .95rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="loader">
+        <div class="loader-ring"></div>
+        <div class="loader-logo">Matmazel Albania</div>
+    </div>
+    <div id="notification"><span id="n-ico"><i class="fas fa-check"></i></span><span id="n-txt">Produkti u shtua!</span>
+    </div>
+    <div id="search-bar">
+        <input type="text" id="search-input" placeholder="Kërko çanta, portofole, bizhuteri...">
+        <button id="search-submit" onclick="doSearch()">Kërko</button>
+    </div>
+
+    <!-- NAV -->
+    <nav id="navbar">
+        <a href="#" class="nav-logo">Matmazel Albania</a>
+        <ul class="nav-links">
+            <li><a onclick="fp('all',null);sg('products')">Të gjitha</a></li>
+            <li><a onclick="fp('canta-femra',null);sg('products')">Çanta Femra</a></li>
+            <li><a onclick="fp('canta-meshkuj',null);sg('products')">Çanta Meshkuj</a></li>
+            <li><a onclick="fp('portofole',null);sg('products')">Portofole</a></li>
+            <li><a onclick="fp('bizhuteri',null);sg('products')">Bizhuteri</a></li>
+        </ul>
+        <div class="nav-actions">
+            <button class="nav-icon" onclick="toggleSearch()"><i class="fas fa-search"></i></button>
+            <button class="nav-icon" style="position:relative" onclick="showWishlist()"><i
+                    class="far fa-heart"></i><span class="wish-count" id="wish-count"
+                    style="display:none">0</span></button>
+            <button class="nav-icon" style="position:relative" onclick="openCart()"><i
+                    class="fas fa-shopping-bag"></i><span class="cart-badge" id="cart-badge">0</span></button>
+        </div>
+        <button class="hamburger" onclick="toggleMobile()"><span></span><span></span><span></span></button>
+    </nav>
+
+    <!-- HERO -->
+    <section id="hero">
+        <div class="hero-left">
+            <span class="hero-chip">Koleksioni Eksklusiv 2025</span>
+            <h1 class="hero-title">
+                More than an accessory , it's your vibe!
+            </h1>
+            <p class="hero-sub">Your summer plans call for some new outfits !</p>
+            <div class="hero-btns">
+                <button class="btn-dark" onclick="sg('products')">Shfleto Koleksionin</button>
+                <button class="btn-ghost" onclick="fp('bizhuteri',null);sg('products')">Bizhuteri ✦</button>
+            </div>
+            <div class="hero-badges">
+                <div class="h-badge"><span class="h-badge-num">200+</span><span class="h-badge-txt">Produkte</span>
+                </div>
+                <div class="h-badge"><span class="h-badge-num">8k+</span><span class="h-badge-txt">Klientë</span></div>
+                <div class="h-badge"><span class="h-badge-num">4.9★</span><span class="h-badge-txt">Vlerësim</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-right">
+            <div class="hero-mosaic">
+                <div class="mosaic-cell" onclick="fp('canta-femra',null);sg('products')">
+                    <span><i class="fas fa-shopping-bag"></i></span><span class="mosaic-label">Çanta Femra</span>
+                </div>
+                <div class="mosaic-cell" onclick="fp('portofole',null);sg('products')">
+                    <span><i class="fas fa-wallet"></i></span><span class="mosaic-label">Portofole</span>
+                </div>
+                <div class="mosaic-cell" onclick="fp('canta-meshkuj',null);sg('products')">
+                    <span><i class="fas fa-briefcase"></i></span><span class="mosaic-label">Çanta Meshkuj</span>
+                </div>
+                <div class="mosaic-cell" onclick="fp('bizhuteri',null);sg('products')">
+                    <span><i class="fas fa-gem"></i></span><span class="mosaic-label">Bizhuteri</span>
+                </div>
+            </div>
+            <div class="hero-badge-float">
+                <div class="float-num">FREE</div>
+                <div class="float-txt">Shipping<br>3000+ Lekë</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MARQUEE -->
+    <div class="marquee-wrap">
+        <div class="marquee-inner">
+            <span class="m-item">Lëkurë 100% Natyrale</span><span class="m-item">Dorëzim Falas mbi 3000 Lekë</span><span
+                class="m-item">Kthim brenda 30 Ditëve</span><span class="m-item">Argjend Sterling 925</span><span
+                class="m-item">Garanci 2 Vjet</span><span class="m-item">Punë Artizanale</span><span
+                class="m-item">Lëkurë 100% Natyrale</span><span class="m-item">Dorëzim Falas mbi 3000 Lekë</span><span
+                class="m-item">Kthim brenda 30 Ditëve</span><span class="m-item">Argjend Sterling 925</span><span
+                class="m-item">Garanci 2 Vjet</span><span class="m-item">Punë Artizanale</span>
+        </div>
+    </div>
+
+    <!-- CATEGORIES -->
+    <section id="categories">
+        <div class="sec-head"><span class="sec-sup"><i class="fas fa-diamond" style="font-size: 0.7em;"></i> Koleksionet
+                tona</span>
+            <h2 class="sec-title">Gjeni stilin tuaj</h2>
+        </div>
+        <div class="cat-grid">
+            <div class="cat-card" onclick="fp('canta-femra',null);sg('products')">
+                <div class="cat-bg"><i class="fas fa-shopping-bag"></i></div>
+                <div class="cat-veil"></div>
+                <div class="cat-info">
+                    <div class="cat-tag">Eksklusiv</div>
+                    <div class="cat-name">Çanta Femra</div>
+                    <div class="cat-cnt">68 modele</div><button class="cat-arrow">Shiko <i
+                            class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+            <div class="cat-card" onclick="fp('canta-meshkuj',null);sg('products')">
+                <div class="cat-bg"><i class="fas fa-briefcase"></i></div>
+                <div class="cat-veil"></div>
+                <div class="cat-info">
+                    <div class="cat-tag">Premium</div>
+                    <div class="cat-name">Çanta Meshkuj</div>
+                    <div class="cat-cnt">45 modele</div><button class="cat-arrow">Shiko <i
+                            class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+            <div class="cat-card" onclick="fp('portofole',null);sg('products')">
+                <div class="cat-bg"><i class="fas fa-wallet"></i></div>
+                <div class="cat-veil"></div>
+                <div class="cat-info">
+                    <div class="cat-tag">Klasike</div>
+                    <div class="cat-name">Portofole</div>
+                    <div class="cat-cnt">52 modele</div><button class="cat-arrow">Shiko <i
+                            class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+            <div class="cat-card" onclick="fp('bizhuteri',null);sg('products')">
+                <div class="cat-bg"><i class="fas fa-gem"></i></div>
+                <div class="cat-veil"></div>
+                <div class="cat-info">
+                    <div class="cat-tag">Fisnike</div>
+                    <div class="cat-name">Bizhuteri</div>
+                    <div class="cat-cnt">87 modele</div><button class="cat-arrow">Shiko <i
+                            class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRODUCTS -->
+    <section id="products">
+        <div class="sec-head"><span class="sec-sup"><i class="fas fa-diamond" style="font-size: 0.7em;"></i> Koleksioni
+                ynë</span>
+            <h2 class="sec-title">Produkte të Zgjedhura</h2>
+        </div>
+        <div class="filter-row" id="filter-row">
+            <button class="f-btn active" onclick="fp('all',this)">Të gjitha</button>
+            <button class="f-btn" onclick="fp('canta-femra',this)"><i class="fas fa-shopping-bag"></i> Çanta
+                Femra</button>
+            <button class="f-btn" onclick="fp('canta-meshkuj',this)"><i class="fas fa-briefcase"></i> Çanta
+                Meshkuj</button>
+            <button class="f-btn" onclick="fp('portofole',this)"><i class="fas fa-wallet"></i> Portofole</button>
+            <button class="f-btn" onclick="fp('bizhuteri',this)"><i class="fas fa-gem"></i> Bizhuteri</button>
+            <button class="f-btn" onclick="fp('sale',this)"><i class="fas fa-fire"></i> Sale</button>
+        </div>
+        <div class="sort-row">
+            <span class="res-count" id="res-count">Duke shfaqur produkte</span>
+            <select class="sort-sel" onchange="sortP(this.value)">
+                <option value="default">Renditja: E parazgjedhur</option>
+                <option value="price-low">Çmimi: Nga më i ulëti</option>
+                <option value="price-high">Çmimi: Nga më i larti</option>
+                <option value="name">Emri: A–Z</option>
+            </select>
+        </div>
+        <div class="prod-grid" id="prod-grid"></div>
+        <div class="lm-wrap"><button class="lm-btn" id="lm-btn" onclick="loadMore()">Ngarko më shumë</button></div>
+    </section>
+
+    <!-- FEATURES -->
+    <section id="features">
+        <div class="feat-grid">
+            <div class="feat-item"><span class="feat-icon"><i class="fas fa-shipping-fast"></i></span>
+                <div class="feat-title">Dorëzim Falas</div>
+                <p class="feat-txt">Për porosi mbi 3000 Lekë në të gjithë Shqipërinë</p>
+            </div>
+            <div class="feat-item"><span class="feat-icon"><i class="fas fa-undo"></i></span>
+                <div class="feat-title">Kthim 30 Ditë</div>
+                <p class="feat-txt">Ktheni produktin pa asnjë problem brenda 30 ditëve</p>
+            </div>
+            <div class="feat-item"><span class="feat-icon"><i class="fas fa-lock"></i></span>
+                <div class="feat-title">Pagesë e Sigurt</div>
+                <p class="feat-txt">Transaksionet tuaja janë të mbrojtura plotësisht</p>
+            </div>
+            <div class="feat-item"><span class="feat-icon"><i class="fas fa-sparkles"></i></span>
+                <div class="feat-title">Garanci Cilësie</div>
+                <p class="feat-txt">Të gjitha produktet kalojnë kontroll të rreptë cilësie</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- BANNER -->
+    <section id="banner">
+        <div class="ban-img">
+            <div class="ban-spin">40%<br><small>ZBRITJE</small></div>
+            <i class="fas fa-gem"></i>
+        </div>
+        <div class="ban-cnt">
+            <span class="ban-sup"><i class="fas fa-diamond" style="font-size: 0.7em;"></i> Ofertë e Kufizuar</span>
+            <h2 class="ban-title">Bizhuteri<br><b>Fisnike</b><br>me çmim special</h2>
+            <p class="ban-txt">Koleksioni ynë i bizhurerisë argjend dhe ar — tani me zbritje deri 40%. Oferta vlen vetëm
+                këtë javë!</p>
+            <div class="hero-btns">
+                <button class="btn-dark" onclick="fp('bizhuteri',null);sg('products')">Shiko Ofertat</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- REVIEWS -->
+    <section id="reviews">
+        <div class="sec-head"><span class="sec-sup"><i class="fas fa-diamond" style="font-size: 0.7em;"></i> Klientët
+                tanë</span>
+            <h2 class="sec-title">Çfarë thonë ata</h2>
+        </div>
+        <div class="rev-grid">
+            <div class="rev-card">
+                <div class="rev-quote">"</div>
+                <div class="rev-stars">★★★★★</div>
+                <p class="rev-txt">Çanta që bleva është e mahnitshme — lëkura është e butë dhe aroma është e lëkurës
+                    natyrale. Më ka bërë shumë komplimente!</p>
+                <div class="rev-person">
+                    <div class="rev-av"><i class="fas fa-user-circle"></i></div>
+                    <div>
+                        <div class="rev-name">Elira Mustafa</div>
+                        <div class="rev-prod">Çantë Lëkure Milano</div>
+                    </div>
+                </div>
+            </div>
+            <div class="rev-card">
+                <div class="rev-quote">"</div>
+                <div class="rev-stars">★★★★★</div>
+                <p class="rev-txt">Portofolin e bleva për bashkëshortin tim — ai është i mahnitur. Cilësia është si e
+                    produkteve luksoze europiane, por me çmim shumë më të mirë.</p>
+                <div class="rev-person">
+                    <div class="rev-av"><i class="fas fa-user-circle"></i></div>
+                    <div>
+                        <div class="rev-name">Anxhela Domi</div>
+                        <div class="rev-prod">Portofol AURË Classic Men</div>
+                    </div>
+                </div>
+            </div>
+            <div class="rev-card">
+                <div class="rev-quote">"</div>
+                <div class="rev-stars">★★★★★</div>
+                <p class="rev-txt">Unaza e argjendtë është gjëja më e bukur që kam blerë online. Mbërriti i paketuar
+                    bukur, perfekte si dhuratë. Do të blej sërish patjetër!</p>
+                <div class="rev-person">
+                    <div class="rev-av"><i class="fas fa-user-circle"></i></div>
+                    <div>
+                        <div class="rev-name">Besa Krasniqi</div>
+                        <div class="rev-prod">Unazë Argjend Floral</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEWSLETTER -->
+    <section id="newsletter">
+        <div class="nl-box">
+            <span class="nl-sup"><i class="fas fa-diamond" style="font-size: 0.7em;"></i> Newsletter</span>
+            <h2 class="nl-title">Koleksione të reja, çdo javë</h2>
+            <p class="nl-txt">Regjistrohu dhe merr 15% zbritje për porosinë e parë plus njoftimet për ardhjet e reja.
+            </p>
+            <div class="nl-form">
+                <input type="email" class="nl-inp" id="nl-email" placeholder="Email-i juaj...">
+                <button class="nl-btn" onclick="subNewsletter()">Regjistrohu</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="foot-grid">
+            <div><span class="foot-logo">AUR<span>Ë</span></span>
+                <p class="foot-desc">Dyqani juaj i aksesoreëve premium në Shqipëri. Çanta, portofole dhe bizhuteri me
+                    cilësi të lartë dhe stil të pashkëputur.</p>
+                <div class="soc-row"><button class="soc-btn"><i class="fab fa-facebook"></i></button><button
+                        class="soc-btn"><i class="fab fa-instagram"></i></button><button class="soc-btn"><i
+                            class="fab fa-tiktok"></i></button><button class="soc-btn"><i
+                            class="fab fa-pinterest"></i></button></div>
+            </div>
+            <div>
+                <div class="foot-title">Koleksionet</div>
+                <ul class="foot-links">
+                    <li><a onclick="fp('canta-femra',null);sg('products')">Çanta Femra</a></li>
+                    <li><a onclick="fp('canta-meshkuj',null);sg('products')">Çanta Meshkuj</a></li>
+                    <li><a onclick="fp('portofole',null);sg('products')">Portofole</a></li>
+                    <li><a onclick="fp('bizhuteri',null);sg('products')">Bizhuteri</a></li>
+                    <li><a onclick="fp('sale',null);sg('products')">Sale & Oferta</a></li>
+                </ul>
+            </div>
+            <div>
+                <div class="foot-title">Informacion</div>
+                <ul class="foot-links">
+                    <li><a>Rreth Nesh</a></li>
+                    <li><a>Politika e Kthimit</a></li>
+                    <li><a>Udhëzues Kujdesi</a></li>
+                    <li><a>Gjurmimi i Porosisë</a></li>
+                    <li><a>Pyetje të Shpeshta</a></li>
+                </ul>
+            </div>
+            <div>
+                <div class="foot-title">Kontakti</div>
+                <ul class="foot-links">
+                    <li><a><i class="fas fa-map-marker-alt"></i> Tiranë, Shqipëri</a></li>
+                    <li><a><i class="fas fa-phone"></i> +355 69 XXX XXXX</a></li>
+                    <li><a><i class="fas fa-envelope"></i> <span class="__cf_email__"
+                                data-cfemail="95fcfbf3fad5f4e0e7f0bbf4f9">[email&#160;protected]</span></a></li>
+                    <li><a><i class="fas fa-clock"></i> E Hënë–E Shtunë 9–18</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="foot-bot">
+            <p class="foot-copy">© 2025 AURË. Të gjitha të drejtat e rezervuara.</p>
+            <div class="pay-icons"><span><i class="fas fa-credit-card"></i></span><span><i
+                        class="fas fa-credit-card"></i></span><span><i
+                        class="fas fa-money-bill-wave"></i></span><span><i class="fas fa-lock"></i></span></div>
+        </div>
+    </footer>
+
+    <!-- CART -->
+    <div id="cart-overlay" onclick="closeCart()"></div>
+    <div id="cart-side">
+        <div class="cart-head"><span class="cart-ttl">Shporta Ime</span><button class="cart-x" onclick="closeCart()"><i
+                    class="fas fa-times"></i></button></div>
+        <div class="cart-body" id="cart-body">
+            <div class="cart-empty-msg"><span class="ce-icon"><i class="fas fa-shopping-bag"></i></span>Shporta juaj
+                është bosh</div>
+        </div>
+        <div class="cart-foot" id="cart-foot" style="display:none">
+            <div class="c-sub"><span>Nëntotali</span><span id="c-sub-v">0 Lekë</span></div>
+            <div class="c-sub"><span>Dërgesa</span><span id="c-ship">Falas</span></div>
+            <div class="c-tot"><span>Totali</span><span id="c-tot-v">0 Lekë</span></div>
+            <button class="c-chk" onclick="openCheckout()">Vazhdo me Pagesën <i class="fas fa-arrow-right"></i></button>
+            <button class="c-cont" onclick="closeCart()"><i class="fas fa-arrow-left"></i> Vazhdo Blerjet</button>
+        </div>
+    </div>
+
+    <!-- MODAL -->
+    <div id="mod-overlay" onclick="handleModClick(event)">
+        <div id="prod-modal" style="display:none">
+            <div class="m-img" id="m-img">
+                <button class="m-close" onclick="closeMod()"><i class="fas fa-times"></i></button>
+                <span id="m-emoji"></span>
+            </div>
+            <div class="m-cnt">
+                <div class="m-brand" id="m-brand"></div>
+                <h2 class="m-name" id="m-name"></h2>
+                <div class="m-rat"><span class="stars" id="m-stars"></span><span id="m-revs"
+                        style="font-size:.75rem;color:var(--warm)"></span></div>
+                <div class="m-pbox"><span class="m-price" id="m-price"></span><span class="m-oprice"
+                        id="m-oprice"></span></div>
+                <div id="m-sz-wrap">
+                    <div class="m-lbl" id="sz-lbl">Madhësia</div>
+                    <div class="sz-row" id="m-sizes"></div>
+                </div>
+                <div class="m-lbl">Ngjyra / Materiali</div>
+                <div class="col-row" id="m-colors"></div>
+                <button class="m-add" onclick="addFromMod()">Shto në Shportë <i
+                        class="fas fa-shopping-bag"></i></button>
+                <button class="m-wish" onclick="wishFromMod()"><i class="far fa-heart"></i> Ruaj në Wishlist</button>
+                <div class="m-desc" id="m-desc"></div>
+                <div class="m-meta" id="m-meta"></div>
+            </div>
+        </div>
+        <div id="chk-modal" style="display:none">
+            <div id="chk-form">
+                <div class="chk-ttl">Porosit<button class="m-close" onclick="closeMod()"
+                        style="position:relative;top:0;right:0;flex-shrink:0"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="ord-sum">
+                    <div class="os-ttl">Detajet e Porosisë</div>
+                    <div id="os-items"></div>
+                    <hr class="os-div">
+                    <div class="os-tot"><span>Totali</span><span id="os-tot"></span></div>
+                </div>
+                <div class="fg">
+                    <div class="fgrp"><label class="flbl">Emri *</label><input type="text" class="finp" id="f-name"
+                            placeholder="Arta"></div>
+                    <div class="fgrp"><label class="flbl">Mbiemri *</label><input type="text" class="finp" id="f-sname"
+                            placeholder="Kelmendi"></div>
+                    <div class="fgrp full"><label class="flbl">Email *</label><input type="email" class="finp"
+                            id="f-email" placeholder="arta@email.com"></div>
+                    <div class="fgrp full"><label class="flbl">Telefoni *</label><input type="tel" class="finp"
+                            id="f-phone" placeholder="+355 69..."></div>
+                    <div class="fgrp full"><label class="flbl">Adresa *</label><input type="text" class="finp"
+                            id="f-addr" placeholder="Rruga, Nr..."></div>
+                    <div class="fgrp"><label class="flbl">Qyteti</label><input type="text" class="finp" id="f-city"
+                            placeholder="Tiranë"></div>
+                    <div class="fgrp"><label class="flbl">Kodi Postar</label><input type="text" class="finp" id="f-zip"
+                            placeholder="1001"></div>
+                    <div class="fgrp full"><label class="flbl">Mënyra e Pagesës</label>
+                        <select class="finp" id="f-pay">
+                            <option>Cash pas Dorëzimit (COD)</option>
+                            <option>Kartë Bankare Online</option>
+                            <option>Transfertë Bankare</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="pord-btn" onclick="placeOrder()">Konfirmo Porosinë <i
+                        class="fas fa-arrow-right"></i></button>
+            </div>
+            <div class="succ-screen" id="succ-view">
+                <span class="succ-ico"><i class="fas fa-check-circle"></i></span>
+                <h2 class="succ-ttl">Porosia u vendos!</h2>
+                <p style="color:var(--warm);font-size:.87rem;margin:.5rem 0 1.2rem">Do të merrni konfirmim me email
+                    shumë shpejt.</p>
+                <p id="ord-num" style="color:var(--gold);font-size:.78rem;letter-spacing:.1em"></p>
+                <button class="btn-dark" style="margin-top:1.4rem" onclick="closeMod();clearCart()">Vazhdo
+                    Blerjet</button>
+            </div>
+        </div>
+    </div>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+    <script>
+        // ── CONTENTFUL CONFIG ──────────────────────────────────────────────────
+        const SPACE_ID = 'ui4g1hyiq4ij';
+        const ACCESS_TOKEN = 'aVCiWO4XWj5cwbnU7-30vWq4S6yrrXkzODz2qem8ia8';
+        const CONTENTFUL_URL = `https://cdn.contentful.com/spaces/${SPACE_ID}/entries?content_type=product&limit=200&access_token=${ACCESS_TOKEN}`;
+
+        // Emoji map bazuar në kategorinë e produktit
+        const EMOJI_MAP = {
+            'canta-femra':   '<i class="fas fa-shopping-bag"></i>',
+            'canta-meshkuj': '<i class="fas fa-briefcase"></i>',
+            'portofole':     '<i class="fas fa-wallet"></i>',
+            'bizhuteri':     '<i class="fas fa-gem"></i>',
+        };
+
+        // Konverton entry-n e Contentful në objektin e produktit
+        function mapEntry(entry) {
+            const f = entry.fields;
+            const cat = f.category || 'canta-femra';
+            return {
+                id:       entry.sys.id,
+                name:     f.name     || 'Pa emër',
+                brand:    f.brand    || 'AURË',
+                cat:      cat,
+                emoji:    f.emoji    || EMOJI_MAP[cat] || '<i class="fas fa-shopping-bag"></i>',
+                price:    f.price    || 0,
+                oldPrice: f.oldPrice || null,
+                rating:   f.rating   || 5.0,
+                reviews:  f.reviews  || 0,
+                tag:      f.tag      || null,
+                colors:   f.colors   || ['#8B4513'],
+                mat:      f.material || 'Lëkurë',
+                sizes:    f.sizes    || ['One Size'],
+                desc:     f.description || '',
+            };
+        }
+
+        let products = [];
+        let productsLoaded = false;
+
+        async function loadProductsFromContentful() {
+            // Trego loader gjatë ngarkimit
+            document.getElementById('prod-grid').innerHTML = `
+                <div style="grid-column:1/-1;text-align:center;padding:80px 20px;">
+                    <div class="loader-ring" style="margin:0 auto 1rem;border-top-color:var(--gold);"></div>
+                    <p style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--warm);">Duke ngarkuar produktet...</p>
+                </div>`;
+
+            try {
+                const res = await fetch(CONTENTFUL_URL);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+
+                if (data.items && data.items.length > 0) {
+                    products = data.items.map(mapEntry);
+                    productsLoaded = true;
+                    renderProds();
+                } else {
+                    // Nuk ka produkte në Contentful — trego mesazh udhëzues
+                    document.getElementById('prod-grid').innerHTML = `
+                        <div style="grid-column:1/-1;text-align:center;padding:80px 20px;">
+                            <div style="font-size:3rem;margin-bottom:1rem;"><i class="fas fa-box-open" style="color:var(--gold)"></i></div>
+                            <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--dark);margin-bottom:.8rem;">Asnjë produkt ende!</h3>
+                            <p style="color:var(--warm);font-size:.9rem;max-width:420px;margin:0 auto;line-height:1.7;">
+                                Shko te <strong>Contentful → Content → Add Entry</strong> dhe shto produktet e tua.<br>
+                                Content Type-i duhet të quhet <code style="background:var(--sand);padding:2px 6px;border-radius:3px;">product</code>
+                            </p>
+                        </div>`;
+                    document.getElementById('res-count').textContent = 'Asnjë produkt i ngarkuar';
+                }
+            } catch (err) {
+                console.error('Contentful error:', err);
+                document.getElementById('prod-grid').innerHTML = `
+                    <div style="grid-column:1/-1;text-align:center;padding:80px 20px;">
+                        <div style="font-size:2.5rem;margin-bottom:1rem;"><i class="fas fa-exclamation-triangle" style="color:var(--rose)"></i></div>
+                        <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--dark);margin-bottom:.8rem;">Gabim gjatë ngarkimit</h3>
+                        <p style="color:var(--warm);font-size:.85rem;">${err.message}</p>
+                        <button class="btn-dark" style="margin-top:1.2rem" onclick="loadProductsFromContentful()">Provo Përsëri</button>
+                    </div>`;
+            }
+        }
+
+        // Produktet statike (ruhen si backup nëse Contentful nuk ka asgjë)
+        const staticProducts = [
+            // CANTA FEMRA
+            { id: 1, name: 'Çantë Tote Milano', brand: 'AURË Donna', cat: 'canta-femra', emoji: '<i class="fas fa-shopping-bag"></i>', price: 5800, oldPrice: 8200, rating: 4.9, reviews: 143, tag: 'sale', colors: ['#8B4513', '#1C1410', '#C8A2C8'], mat: 'Lëkurë e butë italiane', sizes: ['S', 'M', 'L'], desc: 'Çantë tote spacioze me hapësirat e brendshme të shumta. Ideal për punë dhe dalje. Lëkurë 100% natyrale me mbushje pambuku.' },
+            { id: 2, name: 'Mini Bag Elegante', brand: 'AURË Donna', cat: 'canta-femra', emoji: '<i class="fas fa-shopping-bag"></i>', price: 3400, oldPrice: null, rating: 4.7, reviews: 89, tag: 'new', colors: ['#C8A2C8', '#E8C4B8', '#2F4F4F'], mat: 'Lëkurë napa', sizes: ['One Size'], desc: 'Mini çantë me zinxhir të artë, perfekte për mbrëmjet speciale dhe eventeve elegante.' },
+            { id: 3, name: 'Shopper Lëkurë XL', brand: 'AURË Donna', cat: 'canta-femra', emoji: '<i class="fas fa-shopping-bag"></i>', price: 6200, oldPrice: null, rating: 4.8, reviews: 67, tag: 'hot', colors: ['#1C1410', '#8B4513', '#D2B48C'], mat: 'Lëkurë full-grain', sizes: ['L', 'XL'], desc: 'Çantë spacioze shopper me ndarje të brendshme dhe xhepa sekretë. Material full-grain lëkurë.' },
+            { id: 4, name: 'Çantë Mbrëmje Saten', brand: 'AURË Notte', cat: 'canta-femra', emoji: '<i class="fas fa-heart" style="color: purple;"></i>', price: 2900, oldPrice: 4100, rating: 4.6, reviews: 54, tag: 'sale', colors: ['#800080', '#1C1410', '#C0C0C0'], mat: 'Saten & Kadife', sizes: ['One Size'], desc: 'Çantë e vogël mbrëmjeje me material saten dhe detalje kadifeje. Kllapa magnetike.' },
+
+            // CANTA MESHKUJ
+            { id: 5, name: 'Briefcase Executive', brand: 'AURË Uomo', cat: 'canta-meshkuj', emoji: '<i class="fas fa-briefcase"></i>', price: 8900, oldPrice: 12000, rating: 4.9, reviews: 112, tag: 'sale', colors: ['#1C1410', '#2F4F4F', '#8B4513'], mat: 'Lëkurë vegjetale italiane', sizes: ['Standard'], desc: 'Briefcase profesionale me ndarje për laptop deri 15.6" dhe shumë xhepa. Lëkurë vegjetale me patinim natyral.' },
+            { id: 6, name: 'Çantë Messenger Casual', brand: 'AURË Uomo', cat: 'canta-meshkuj', emoji: '<i class="fas fa-suitcase"></i>', price: 4200, oldPrice: null, rating: 4.6, reviews: 78, tag: 'new', colors: ['#2F4F4F', '#1C1410', '#8B8682'], mat: 'Lëkurë & canvas', sizes: ['M', 'L'], desc: 'Çantë messenger e lehtë për përdorim të përditshëm. Ndërthur lëkurë natyrale me kanavacë premium.' },
+            { id: 7, name: 'Travel Bag Weekender', brand: 'AURË Uomo', cat: 'canta-meshkuj', emoji: '<i class="fas fa-suitcase-rolling"></i>', price: 9500, oldPrice: null, rating: 4.8, reviews: 45, tag: 'hot', colors: ['#1C1410', '#8B4513'], mat: 'Lëkurë viçi', sizes: ['L'], desc: 'Çantë e madhe për udhëtime fundjavore. Kapacitet 40L, material lëkurë viçi e qëndrueshme.' },
+
+            // PORTOFOLE
+            { id: 8, name: 'Portofol Classic Slim Femra', brand: 'AURË Wallet', cat: 'portofole', emoji: '<i class="fas fa-wallet"></i>', price: 2200, oldPrice: 3000, rating: 4.8, reviews: 198, tag: 'sale', colors: ['#C8A2C8', '#E8C4B8', '#8B4513'], mat: 'Lëkurë e butë', sizes: ['Standarde'], desc: 'Portofol i hollë femrash me 8 xhepa kartash, 1 xhep monedhe me fermoar dhe hapësirë për kartëmonedha.' },
+            { id: 9, name: 'Portofol Bifold Meshkuj', brand: 'AURË Wallet', cat: 'portofole', emoji: '<i class="fas fa-folder"></i>', price: 1800, oldPrice: null, rating: 4.7, reviews: 165, tag: 'new', colors: ['#1C1410', '#2F4F4F', '#8B4513'], mat: 'Lëkurë vegjetale', sizes: ['Standarde'], desc: 'Portofol klasik bifold me 6 xhepa kartash dhe hapësirë të dyfishtë për kartëmonedha.' },
+            { id: 10, name: 'Portofol Mini Card Holder', brand: 'AURË Wallet', cat: 'portofole', emoji: '<i class="fas fa-credit-card"></i>', price: 1200, oldPrice: 1600, rating: 4.5, reviews: 87, tag: 'sale', colors: ['#C8A2C8', '#1C1410', '#B8955A'], mat: 'Lëkurë saffiano', sizes: ['Mini'], desc: 'Card holder minimal me 4 xhepa kartash. Dizajn ultra-slim perfekt për jetën moderne.' },
+            { id: 11, name: 'Portofol Zip-Around Femra', brand: 'AURË Wallet', cat: 'portofole', emoji: '<i class="fas fa-briefcase"></i>', price: 2800, oldPrice: null, rating: 4.9, reviews: 134, tag: 'hot', colors: ['#8B4513', '#E8C4B8', '#800080'], mat: 'Lëkurë pebble', sizes: ['Standarde', 'L'], desc: 'Portofol i madh me fermoar rreth e rrotull, ideal për femrat që mbajnë shumë gjëra. 12 xhepa kartash.' },
+
+            // BIZHUTERI
+            { id: 12, name: 'Vathë Argjend Floral', brand: 'AURË Jewels', cat: 'bizhuteri', emoji: '<i class="fas fa-gem"></i>', price: 1400, oldPrice: 2000, rating: 4.9, reviews: 234, tag: 'sale', colors: ['#C0C0C0'], mat: 'Argjend Sterling 925', sizes: ['One Size'], desc: 'Vathë elegante me motive floreale, të bëra nga argjend sterling 925. Hipoalergjike dhe të qëndrueshme.' },
+            { id: 13, name: 'Gërshet Ar 18K', brand: 'AURË Jewels', cat: 'bizhuteri', emoji: '<i class="fas fa-circle-notch"></i>', price: 4500, oldPrice: null, rating: 4.8, reviews: 98, tag: 'hot', colors: ['#FFD700'], mat: 'Ar 18 Karate', sizes: ['40cm', '45cm', '50cm'], desc: 'Gërshet delikat i punuar me ar 18 karate. I disponueshëm në tre gjatësi. Fermoar siguri me 2 hapa.' },
+            { id: 14, name: 'Unazë Argjend Minimale', brand: 'AURË Jewels', cat: 'bizhuteri', emoji: '<i class="fas fa-gem"></i>', price: 900, oldPrice: 1300, rating: 4.7, reviews: 189, tag: 'sale', colors: ['#C0C0C0'], mat: 'Argjend Sterling 925', sizes: ['52', '54', '56', '58', '60'], desc: 'Unazë minimale e hollë nga argjend sterling 925. Perfekte si dhuratë ose si shtesë e koleksionit tuaj.' },
+            { id: 15, name: 'Byzylyk Artizanal', brand: 'AURË Jewels', cat: 'bizhuteri', emoji: '<i class="fas fa-sparkles"></i>', price: 1600, oldPrice: null, rating: 4.6, reviews: 76, tag: 'new', colors: ['#C0C0C0', '#FFD700', '#B87333'], mat: 'Argjend / Ar / Bronz', sizes: ['S', 'M', 'L'], desc: 'Byzylyk me punë artizanale, i disponueshëm në argjend, ar dhe bronz. Mbyllje rregulluese.' },
+            { id: 16, name: 'Set Bizhuteri Nuse', brand: 'AURË Bridal', cat: 'bizhuteri', emoji: '<i class="fas fa-crown"></i>', price: 8500, oldPrice: 12000, rating: 5.0, reviews: 43, tag: 'sale', colors: ['#C0C0C0', '#FFD700'], mat: 'Argjend & Ar 18K', sizes: ['One Size'], desc: 'Set komplet nusërie: vathë, gërshet dhe unazë nga argjend dhe ar 18K. I paketuar në kuti luksur.' },
+        ];
+
+        let cart = [], wishlist = [], curFilter = 'all', curSort = 'default', visibleCnt = 12, curProd = null, selSz = null, selCol = null;
+        try { cart = JSON.parse(localStorage.getItem('aure-cart') || '[]'); wishlist = JSON.parse(localStorage.getItem('aure-wish') || '[]'); } catch (e) { }
+
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loader').classList.add('hidden');
+                updCartBadge();
+                updWishBadge();
+                // Ngarko nga Contentful; nëse dështon, ruajmë produktet statike si fallback
+                loadProductsFromContentful().catch(() => {
+                    if (!productsLoaded) { products = [...staticProducts]; renderProds(); }
+                });
+            }, 1400);
+        });
+        window.addEventListener('scroll', () => { document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 80); });
+
+        function sg(id) { document.getElementById(id).scrollIntoView({ behavior: 'smooth' }); }
+
+        function getProds() {
+            let list = [...products];
+            if (curFilter !== 'all') { if (curFilter === 'sale') list = list.filter(p => p.tag === 'sale'); else list = list.filter(p => p.cat === curFilter); }
+            if (curSort === 'price-low') list.sort((a, b) => a.price - b.price);
+            else if (curSort === 'price-high') list.sort((a, b) => b.price - a.price);
+            else if (curSort === 'name') list.sort((a, b) => a.name.localeCompare(b.name));
+            return list;
+        }
+
+        function renderProds() {
+            const list = getProds(), grid = document.getElementById('prod-grid'), shown = list.slice(0, visibleCnt);
+            document.getElementById('res-count').textContent = `Duke shfaqur ${shown.length} nga ${list.length} produkte`;
+            document.getElementById('lm-btn').style.display = list.length > visibleCnt ? 'inline-block' : 'none';
+            grid.innerHTML = '';
+            shown.forEach((p, i) => {
+                const wd = wishlist.includes(String(p.id));
+                const c = document.createElement('div'); c.className = 'p-card'; c.style.animationDelay = `${i * .06}s`;
+                c.innerHTML = `
+      <div class="p-img" onclick="openMod(event,${p.id})">
+        ${p.tag ? `<span class="p-tag tag-${p.tag}">${p.tag === 'new' ? 'I Ri' : p.tag === 'sale' ? 'Sale' : p.tag === 'hot' ? '<i class="fas fa-fire"></i> Hot' : 'Ltd'}</span>` : ''}
+        <div class="p-acts">
+          <button class="p-act ${wd ? 'liked' : ''}" onclick="toggleWish(event,${p.id})">${wd ? '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>'}</button>
+          <button class="p-act" onclick="openMod(event,${p.id})"><i class="fas fa-search"></i></button>
+        </div>
+        <span class="p-emoji">${p.emoji}</span>
+        <button class="p-qadd" onclick="quickAdd(event,${p.id})">+ Shto në Shportë</button>
+      </div>
+      <div class="p-info">
+        <div class="p-brand">${p.brand}</div>
+        <div class="p-name">${p.name}</div>
+        <div class="p-rating"><span class="stars">${'★'.repeat(Math.floor(p.rating))}${'☆'.repeat(5 - Math.floor(p.rating))}</span><span class="rcnt">(${p.reviews})</span></div>
+        <div class="p-price">
+          <span class="p-cur">${p.price.toLocaleString()} Lekë</span>
+          ${p.oldPrice ? `<span class="p-old">${p.oldPrice.toLocaleString()} Lekë</span><span class="p-disc">-${Math.round((1 - p.price / p.oldPrice) * 100)}%</span>` : ''}
+        </div>
+        <div class="p-mat">${p.mat}</div>
+      </div>`;
+                grid.appendChild(c);
+            });
+        }
+
+        function fp(cat, btn) {
+            curFilter = cat; visibleCnt = 12;
+            document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            renderProds();
+        }
+        function sortP(v) { curSort = v; renderProds(); }
+        function loadMore() { visibleCnt += 8; renderProds(); }
+        function quickAdd(e, id) { e.stopPropagation(); const p = products.find(x => String(x.id) === String(id)); if(p) addToCart(p, p.sizes[0], p.colors[0]); }
+
+        function addToCart(prod, sz, col) {
+            const ex = cart.find(i => i.id === prod.id && i.sz === sz);
+            if (ex) ex.qty++; else cart.push({ ...prod, sz: sz || prod.sizes[0], col: col || prod.colors[0], qty: 1 });
+            saveCart(); updCartBadge(); showNotif('<i class="fas fa-check"></i>', `${prod.name} u shtua në shportë!`);
+        }
+
+        function openMod(e, id) {
+            e && e.stopPropagation();
+            const p = products.find(x => String(x.id) === String(id)); if(!p) return; curProd = p; selSz = p.sizes[0]; selCol = p.colors[0];
+            document.getElementById('m-emoji').textContent = p.emoji;
+            document.getElementById('m-emoji').style.fontSize = '7.5rem';
+            document.getElementById('m-brand').textContent = p.brand;
+            document.getElementById('m-name').textContent = p.name;
+            document.getElementById('m-stars').textContent = '★'.repeat(Math.floor(p.rating)) + '☆'.repeat(5 - Math.floor(p.rating));
+            document.getElementById('m-revs').textContent = `(${p.reviews} komente)`;
+            document.getElementById('m-price').textContent = `${p.price.toLocaleString()} Lekë`;
+            document.getElementById('m-oprice').textContent = p.oldPrice ? `${p.oldPrice.toLocaleString()} Lekë` : '';
+            document.getElementById('m-desc').textContent = p.desc;
+            document.getElementById('m-meta').innerHTML = `<span><i class="fas fa-box"></i> ${p.mat}</span><span><i class="fas fa-check-circle"></i> Në gjendje</span><span><i class="fas fa-shipping-fast"></i> 2-3 ditë</span>`;
+            const szLbl = p.cat === 'bizhuteri' ? 'Madhësia / Nr.' : 'Madhësia';
+            document.getElementById('sz-lbl').textContent = szLbl;
+            document.getElementById('m-sizes').innerHTML = p.sizes.map((s, i) => `<button class="sz-btn ${i === 0 ? 'sel' : ''}" onclick="selSize(this,'${s}')">${s}</button>`).join('');
+            document.getElementById('m-colors').innerHTML = p.colors.map((c, i) => `<div class="m-col ${i === 0 ? 'sel' : ''}" style="background:${c};border:1px solid rgba(0,0,0,.15)" onclick="selColor(this,'${c}')" title="${c}"></div>`).join('');
+            document.getElementById('prod-modal').style.display = 'grid';
+            document.getElementById('chk-modal').style.display = 'none';
+            document.getElementById('mod-overlay').classList.add('open');
+        }
+
+        function selSize(el, s) { document.querySelectorAll('.sz-btn').forEach(b => b.classList.remove('sel')); el.classList.add('sel'); selSz = s; }
+        function selColor(el, c) { document.querySelectorAll('.m-col').forEach(x => x.classList.remove('sel')); el.classList.add('sel'); selCol = c; }
+        function addFromMod() { if (!curProd) return; addToCart(curProd, selSz, selCol); closeMod(); }
+        function wishFromMod() { if (!curProd) return; toggleWish(null, curProd.id); renderProds(); }
+        function closeMod() {
+            document.getElementById('mod-overlay').classList.remove('open');
+            setTimeout(() => { document.getElementById('prod-modal').style.display = 'none'; document.getElementById('chk-modal').style.display = 'none'; document.getElementById('succ-view').classList.remove('on'); document.getElementById('chk-form').style.display = 'block'; }, 300);
+        }
+        function handleModClick(e) { if (e.target === document.getElementById('mod-overlay')) closeMod(); }
+
+        function openCart() { document.getElementById('cart-overlay').classList.add('open'); document.getElementById('cart-side').classList.add('open'); renderCart(); }
+        function closeCart() { document.getElementById('cart-overlay').classList.remove('open'); document.getElementById('cart-side').classList.remove('open'); }
+        function renderCart() {
+            const body = document.getElementById('cart-body'), foot = document.getElementById('cart-foot');
+            if (cart.length === 0) { body.innerHTML = '<div class="cart-empty-msg"><span class="ce-icon"><i class="fas fa-shopping-bag"></i></span>Shporta juaj është bosh</div>'; foot.style.display = 'none'; return; }
+            foot.style.display = 'block';
+            const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+            const ship = total >= 3000 ? 0 : 300;
+            body.innerHTML = cart.map(item => `
+    <div class="c-item">
+      <div class="c-item-img">${item.emoji}</div>
+      <div>
+        <div class="c-iname">${item.name}</div>
+        <div class="c-isize">${item.sz} · ${item.mat}</div>
+        <div class="c-qty">
+          <button class="q-btn" onclick="chgQty(${item.id},'${item.sz}',-1)">−</button>
+          <span class="q-n">${item.qty}</span>
+          <button class="q-btn" onclick="chgQty(${item.id},'${item.sz}',1)">+</button>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
+        <span class="c-iprice">${(item.price * item.qty).toLocaleString()} Lekë</span>
+        <button class="c-irm" onclick="rmItem(${item.id},'${item.sz}')"><i class="fas fa-times"></i></button>
+      </div>
+    </div>`).join('');
+            document.getElementById('c-sub-v').textContent = `${total.toLocaleString()} Lekë`;
+            document.getElementById('c-ship').textContent = ship === 0 ? 'Falas' : '300 Lekë';
+            document.getElementById('c-tot-v').textContent = `${(total + ship).toLocaleString()} Lekë`;
+        }
+        function chgQty(id, sz, d) { const i = cart.find(x => x.id === id && x.sz === sz); if (!i) return; i.qty += d; if (i.qty <= 0) cart = cart.filter(x => !(x.id === id && x.sz === sz)); saveCart(); updCartBadge(); renderCart(); }
+        function rmItem(id, sz) { cart = cart.filter(x => !(x.id === id && x.sz === sz)); saveCart(); updCartBadge(); renderCart(); }
+        function clearCart() { cart = []; saveCart(); updCartBadge(); }
+        function saveCart() { try { localStorage.setItem('aure-cart', JSON.stringify(cart)); } catch (e) { } }
+        function updCartBadge() { const t = cart.reduce((s, i) => s + i.qty, 0), b = document.getElementById('cart-badge'); b.textContent = t; b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump'); }
+
+        function openCheckout() {
+            if (cart.length === 0) return; closeCart();
+            const total = cart.reduce((s, i) => s + i.price * i.qty, 0); const ship = total >= 3000 ? 0 : 300;
+            document.getElementById('os-items').innerHTML = cart.map(i => `<div class="os-item"><span>${i.name} ×${i.qty}</span><span>${(i.price * i.qty).toLocaleString()} Lekë</span></div>`).join('') + `<div class="os-item"><span>Dërgesa</span><span>${ship === 0 ? 'Falas' : '300 Lekë'}</span></div>`;
+            document.getElementById('os-tot').textContent = `${(total + ship).toLocaleString()} Lekë`;
+            document.getElementById('chk-modal').style.display = 'block';
+            document.getElementById('prod-modal').style.display = 'none';
+            document.getElementById('mod-overlay').classList.add('open');
+        }
+        function placeOrder() {
+            const n = document.getElementById('f-name').value.trim(), em = document.getElementById('f-email').value.trim(), ph = document.getElementById('f-phone').value.trim(), ad = document.getElementById('f-addr').value.trim();
+            if (!n || !em || !ph || !ad) { showNotif('<i class="fas fa-exclamation-triangle"></i>', 'Plotësoni fushat e detyrueshme!'); return; }
+            document.getElementById('ord-num').textContent = `Numri i Porosisë: #AUR${Date.now().toString().slice(-5)}`;
+            document.getElementById('chk-form').style.display = 'none';
+            document.getElementById('succ-view').classList.add('on');
+        }
+
+        function toggleWish(e, id) {
+            e && e.stopPropagation();
+            const sid = String(id);
+            if (wishlist.includes(sid)) { wishlist = wishlist.filter(x => x !== sid); showNotif('<i class="far fa-heart"></i>', 'Hequr nga Wishlist'); }
+            else { wishlist.push(sid); showNotif('<i class="fas fa-heart"></i>', 'Shtuar në Wishlist!'); }
+            try { localStorage.setItem('aure-wish', JSON.stringify(wishlist)); } catch (e) { }
+            updWishBadge(); renderProds();
+        }
+        function updWishBadge() { const b = document.getElementById('wish-count'); b.textContent = wishlist.length; b.style.display = wishlist.length > 0 ? 'flex' : 'none'; }
+        function showWishlist() {
+            if (wishlist.length === 0) { showNotif('<i class="far fa-heart"></i>', 'Wishlist-i është bosh'); return; }
+            const wlist = products.filter(p => wishlist.includes(p.id));
+            const grid = document.getElementById('prod-grid'); grid.innerHTML = '';
+            document.getElementById('res-count').textContent = `Wishlist: ${wlist.length} produkte`;
+            document.getElementById('lm-btn').style.display = 'none';
+            wlist.forEach((p, i) => { const c = document.createElement('div'); c.className = 'p-card'; c.style.animationDelay = `${i * .06}s`; c.innerHTML = `<div class="p-img" onclick="openMod(event,${p.id})"><div class="p-acts" style="transform:translateX(0)"><button class="p-act liked" onclick="toggleWish(event,${p.id})"><i class="fas fa-heart"></i></button></div><span class="p-emoji">${p.emoji}</span><button class="p-qadd" onclick="quickAdd(event,${p.id})">+ Shto në Shportë</button></div><div class="p-info"><div class="p-brand">${p.brand}</div><div class="p-name">${p.name}</div><div class="p-price"><span class="p-cur">${p.price.toLocaleString()} Lekë</span></div><div class="p-mat">${p.mat}</div></div>`; grid.appendChild(c); });
+            sg('products');
+        }
+
+        let srchOpen = false;
+        function toggleSearch() { srchOpen = !srchOpen; document.getElementById('search-bar').classList.toggle('open', srchOpen); if (srchOpen) document.getElementById('search-input').focus(); }
+        function doSearch() {
+            const q = document.getElementById('search-input').value.trim().toLowerCase(); if (!q) return;
+            toggleSearch();
+            const res = products.filter(p => p.name.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q) || p.mat.toLowerCase().includes(q));
+            const grid = document.getElementById('prod-grid'); grid.innerHTML = '';
+            document.getElementById('res-count').textContent = `Rezultate për "${q}": ${res.length}`;
+            document.getElementById('lm-btn').style.display = 'none';
+            if (!res.length) { grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--warm)">Nuk u gjet asnjë produkt për "${q}"</div>`; }
+            else res.forEach((p, i) => { const c = document.createElement('div'); c.className = 'p-card'; c.style.animationDelay = `${i * .06}s`; c.innerHTML = `<div class="p-img" onclick="openMod(event,${p.id})">${p.tag ? `<span class="p-tag tag-${p.tag}">${p.tag === 'new' ? 'I Ri' : p.tag === 'sale' ? 'Sale' : '<i class="fas fa-fire"></i> Hot'}</span>` : ''}<span class="p-emoji">${p.emoji}</span><button class="p-qadd" onclick="quickAdd(event,${p.id})">+ Shto në Shportë</button></div><div class="p-info"><div class="p-brand">${p.brand}</div><div class="p-name">${p.name}</div><div class="p-price"><span class="p-cur">${p.price.toLocaleString()} Lekë</span>${p.oldPrice ? `<span class="p-old">${p.oldPrice.toLocaleString()} Lekë</span>` : ''}</div><div class="p-mat">${p.mat}</div></div>`; grid.appendChild(c); });
+            sg('products');
+        }
+        document.getElementById('search-input').addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); if (e.key === 'Escape') toggleSearch(); });
+
+        function subNewsletter() {
+            const em = document.getElementById('nl-email').value.trim();
+            if (!em || !em.includes('@')) { showNotif('<i class="fas fa-exclamation-triangle"></i>', 'Shkruani një email valid!'); return; }
+            document.getElementById('nl-email').value = ''; showNotif('<i class="fas fa-envelope"></i>', 'U regjistruat! +15% zbritje ju pret!');
+        }
+
+        let ntTimer = null;
+        function showNotif(ico, txt) {
+            const n = document.getElementById('notification');
+            document.getElementById('n-ico').textContent = ico; document.getElementById('n-txt').textContent = txt;
+            n.classList.add('show'); clearTimeout(ntTimer); ntTimer = setTimeout(() => n.classList.remove('show'), 3200);
+        }
+
+        function toggleMobile() {
+            const nl = document.querySelector('.nav-links');
+            const vis = nl.style.display === 'flex';
+            nl.style.cssText = vis ? 'display:none' : 'display:flex;flex-direction:column;position:absolute;top:70px;left:0;right:0;background:var(--light);padding:20px 5%;box-shadow:0 10px 30px rgba(0,0,0,.08);z-index:999';
+        }
+    </script>
+</body>
+
+</html>
